@@ -31,9 +31,8 @@ export default function Login() {
     navigate('/dashboard')
   }
 
-  const handleGoogle = async () => {
-    const err = await loginWithGoogle()
-    if (!err) navigate('/dashboard')
+  const handleGoogle = () => {
+    loginWithGoogle()
   }
 
   return (

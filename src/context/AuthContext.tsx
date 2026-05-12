@@ -2,7 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   updateProfile,
   onAuthStateChanged,
@@ -66,6 +67,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsub
   }, [])
 
+  // Handle redirect result from Google Sign-In
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          window.location.href = '/dashboard'
+        }
+      })
+      .catch(() => {
+        // ignore — redirect sign-in failed silently
+      })
+  }, [])
+
   const login = useCallback(async (email: string, password: string): Promise<string | null> => {
     try {
       await signInWithEmailAndPassword(auth, email, password)
@@ -79,15 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const loginWithGoogle = useCallback(async (): Promise<string | null> => {
-    try {
-      await signInWithPopup(auth, googleProvider)
-      return null
-    } catch (err: unknown) {
-      const e = err as { code?: string }
-      if (e.code === 'auth/popup-closed-by-user') return null
-      return 'Gagal masuk dengan Google. Silakan coba lagi.'
-    }
+  const loginWithGoogle = useCallback((): Promise<string | null> => {
+    signInWithRedirect(auth, googleProvider)
+    return Promise.resolve(null)
   }, [])
 
   const register = useCallback(async (name: string, email: string, password: string): Promise<string | null> => {

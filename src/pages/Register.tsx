@@ -33,9 +33,8 @@ export default function Register() {
     }
   }
 
-  const handleGoogle = async () => {
-    const err = await loginWithGoogle()
-    if (!err) navigate('/dashboard')
+  const handleGoogle = () => {
+    loginWithGoogle()
   }
 
   return (
