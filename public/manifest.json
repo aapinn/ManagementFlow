@@ -1,0 +1,12 @@
+{
+  "name": "ManagementFlow",
+  "short_name": "MFlow",
+  "description": "Aplikasi manajemen keuangan pribadi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9f8",
+  "theme_color": "#7c6cf0",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
