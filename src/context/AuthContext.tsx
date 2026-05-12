@@ -6,6 +6,9 @@ import {
   getRedirectResult,
   signOut,
   updateProfile,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
   fetchSignInMethodsForEmail,
@@ -27,6 +30,7 @@ interface AuthContextType {
   sendPasswordResetCode: (email: string) => Promise<string | null>
   verifyResetCode: (email: string, code: string) => boolean
   completePasswordReset: (email: string) => Promise<string | null>
+  changePassword: (currentPassword: string, newPassword: string) => Promise<string | null>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -71,7 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getRedirectResult(auth)
       .then((result) => {
-        if (result?.user) {
+        if (result?.user?.email) {
+          addVerifiedEmail(result.user.email)
           window.location.href = '/dashboard'
         }
       })
@@ -182,6 +187,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string): Promise<string | null> => {
+    const firebaseUser = auth.currentUser
+    if (!firebaseUser || !firebaseUser.email) return 'Anda harus login terlebih dahulu'
+
+    try {
+      const cred = EmailAuthProvider.credential(firebaseUser.email, currentPassword)
+      await reauthenticateWithCredential(firebaseUser, cred)
+      await updatePassword(firebaseUser, newPassword)
+      return null
+    } catch (err: unknown) {
+      const e = err as { code?: string }
+      if (e.code === 'auth/wrong-password') return 'Password saat ini salah'
+      if (e.code === 'auth/weak-password') return 'Password baru terlalu lemah. Minimal 6 karakter.'
+      if (e.code === 'auth/requires-recent-login') return 'Sesi telah habis. Silakan login ulang.'
+      return 'Gagal mengubah password. Silakan coba lagi.'
+    }
+  }, [])
+
   return (
     <AuthContext.Provider
       value={{
@@ -198,6 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         sendPasswordResetCode,
         verifyResetCode,
         completePasswordReset,
+        changePassword,
       }}
     >
       {children}

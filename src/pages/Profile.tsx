@@ -13,7 +13,7 @@ type Tab = 'profile' | 'settings'
 
 export default function Profile() {
   const loading = usePageLoading()
-  const { user, logout } = useAuth()
+  const { user, logout, changePassword } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { incomes, clearIncomes, totalIncome } = useIncome()
   const { expenses, clearExpenses, totalExpense } = useExpense()
@@ -28,6 +28,10 @@ export default function Profile() {
     if (!user) return ''
     return localStorage.getItem(`safeLimit_${user.uid}`) || ''
   })
+  const [pwCurrent, setPwCurrent] = useState('')
+  const [pwNew, setPwNew] = useState('')
+  const [pwConfirm, setPwConfirm] = useState('')
+  const [pwSaving, setPwSaving] = useState(false)
 
   if (loading) return <ProfileSkeleton />
 
@@ -38,6 +42,33 @@ export default function Profile() {
     setSaving(true)
     if (user) localStorage.setItem('user', JSON.stringify({ ...user, name }))
     setTimeout(() => { setSaving(false); showToast('Profil berhasil diperbarui') }, 400)
+  }
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!pwCurrent || !pwNew || !pwConfirm) {
+      showToast('Silakan isi semua field', 'error')
+      return
+    }
+    if (pwNew !== pwConfirm) {
+      showToast('Password baru tidak cocok', 'error')
+      return
+    }
+    if (pwNew.length < 6) {
+      showToast('Password baru minimal 6 karakter', 'error')
+      return
+    }
+    setPwSaving(true)
+    const err = await changePassword(pwCurrent, pwNew)
+    setPwSaving(false)
+    if (err) {
+      showToast(err, 'error')
+    } else {
+      showToast('Password berhasil diubah')
+      setPwCurrent('')
+      setPwNew('')
+      setPwConfirm('')
+    }
   }
 
   const handleReset = () => {
@@ -200,6 +231,15 @@ export default function Profile() {
 
             <div className="settings-group">
               <h4 className="settings-group-title">Akun</h4>
+              <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+                <span style={{ fontWeight: 600 }}>Ubah Password</span>
+                <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <input type="password" value={pwCurrent} onChange={(e) => setPwCurrent(e.target.value)} placeholder="Password saat ini" style={{ padding: '6px 10px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 13, fontFamily: 'var(--sans)', background: 'var(--bg)', color: 'var(--text-h)', outline: 'none' }} />
+                  <input type="password" value={pwNew} onChange={(e) => setPwNew(e.target.value)} placeholder="Password baru (min 6 karakter)" style={{ padding: '6px 10px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 13, fontFamily: 'var(--sans)', background: 'var(--bg)', color: 'var(--text-h)', outline: 'none' }} />
+                  <input type="password" value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} placeholder="Konfirmasi password baru" style={{ padding: '6px 10px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 13, fontFamily: 'var(--sans)', background: 'var(--bg)', color: 'var(--text-h)', outline: 'none' }} />
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={pwSaving}>{pwSaving ? 'Menyimpan...' : 'Simpan Password'}</button>
+                </form>
+              </div>
               <div className="settings-row">
                 <span>Keluar dari aplikasi</span>
                 <button className="btn btn-danger btn-sm" onClick={logout}>Logout</button>
