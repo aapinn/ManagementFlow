@@ -182,7 +182,7 @@
 .theme-icon { transition: transform 0.4s ease; display: flex; }
 .sidebar-theme-btn:hover .theme-icon { transform: rotate(15deg); }
 .sidebar-user {
-  display: flex; align-items: center; gap: 8px; flex: 1;
+  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
   padding: 6px 8px; border: none; border-radius: var(--radius-sm);
   background: transparent; cursor: pointer; text-align: left; transition: background 0.15s;
 }
