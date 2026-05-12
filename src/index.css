@@ -80,9 +80,7 @@ p { margin: 0; }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
 
 ::selection { background: var(--accent-bg); color: var(--accent); }
