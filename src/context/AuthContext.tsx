@@ -13,7 +13,10 @@ import {
   sendPasswordResetEmail,
   fetchSignInMethodsForEmail,
 } from 'firebase/auth'
-import { auth, googleProvider } from '../lib/firebase'
+import { auth, googleProvider, firebaseConfig } from '../lib/firebase'
+
+const API_KEY = firebaseConfig.apiKey
+const AUTH_DOMAIN = firebaseConfig.authDomain
 import type { User } from '../types'
 
 interface AuthContextType {
@@ -29,7 +32,7 @@ interface AuthContextType {
   verifyCode: (email: string, code: string) => boolean
   sendPasswordResetCode: (email: string) => Promise<string | null>
   verifyResetCode: (email: string, code: string) => boolean
-  completePasswordReset: (email: string) => Promise<string | null>
+  completePasswordReset: (email: string) => Promise<{ resetLink: string } | string | null>
   changePassword: (currentPassword: string, newPassword: string) => Promise<string | null>
 }
 
@@ -163,9 +166,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const methods = await fetchSignInMethodsForEmail(auth, email)
       if (methods.length === 0) return 'Email tidak terdaftar'
+
+      // Rate limiting: max 3 attempts, 1 min cooldown
+      const rateKey = `resetRate_${email}`
+      const now = Date.now()
+      const rateData = JSON.parse(localStorage.getItem(rateKey) || '{"count":0,"last":0}')
+      if (rateData.count >= 3) {
+        const elapsed = now - rateData.last
+        if (elapsed < 60000) {
+          const wait = Math.ceil((60000 - elapsed) / 1000)
+          return `Terlalu banyak percobaan. Tunggu ${wait} detik.`
+        }
+        rateData.count = 0
+      }
+      if (now - rateData.last < 60000) {
+        const wait = Math.ceil((60000 - (now - rateData.last)) / 1000)
+        return `Tunggu ${wait} detik sebelum kirim ulang.`
+      }
+      rateData.count++
+      rateData.last = now
+      localStorage.setItem(rateKey, JSON.stringify(rateData))
+
       const code = generateCode()
       const data = JSON.parse(localStorage.getItem('resetCodes') || '{}')
-      data[email] = { code, expiry: Date.now() + 10 * 60 * 1000 }
+      data[email] = { code, expiry: now + 10 * 60 * 1000 }
       localStorage.setItem('resetCodes', JSON.stringify(data))
       return code
     } catch {
@@ -188,10 +212,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true
   }, [])
 
-  const completePasswordReset = useCallback(async (email: string): Promise<string | null> => {
+  const completePasswordReset = useCallback(async (email: string): Promise<{ resetLink: string } | string | null> => {
     try {
+      // Try sending via Firebase SDK first
       await sendPasswordResetEmail(auth, email)
-      return null
+    } catch {
+      // SDK failed — fall through to REST API
+    }
+
+    // Always get the OOB code via REST API for the direct link
+    try {
+      const res = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            requestType: 'PASSWORD_RESET',
+            email,
+          }),
+        }
+      )
+      const data = await res.json()
+      if (data.error) {
+        console.error('Password reset API error:', data.error)
+        return 'Gagal mengirim email reset. Silakan coba lagi.'
+      }
+      const resetLink = `https://${AUTH_DOMAIN}/__/auth/action?mode=resetPassword&oobCode=${data.oobCode}&apiKey=${API_KEY}`
+      return { resetLink }
     } catch {
       return 'Gagal mengirim email reset. Silakan coba lagi.'
     }

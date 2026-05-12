@@ -11,6 +11,9 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState<Step>('email')
   const [demoCode, setDemoCode] = useState('')
+  const [resetLink, setResetLink] = useState('')
+  const [resendCount, setResendCount] = useState(0)
+  const [resendCooldown, setResendCooldown] = useState(0)
   const { sendPasswordResetCode, verifyResetCode, completePasswordReset } = useAuth()
 
   const handleSendCode = async (e: FormEvent) => {
@@ -27,12 +30,45 @@ export default function ForgotPassword() {
       setError('Gagal mengirim kode. Silakan coba lagi.')
       return
     }
-    if (typeof result === 'string' && result.includes('tidak terdaftar')) {
+    if (typeof result === 'string' && (result.includes('tidak terdaftar') || result.includes('Tunggu') || result.includes('Terlalu banyak'))) {
       setError(result)
       return
     }
     setDemoCode(result as string)
+    setResendCount(1)
     setStep('code')
+    startCooldown()
+  }
+
+  const handleResendCode = async () => {
+    setError('')
+    setLoading(true)
+    const result = await sendPasswordResetCode(email)
+    setLoading(false)
+    if (result === null) {
+      setError('Gagal mengirim kode. Silakan coba lagi.')
+      return
+    }
+    if (typeof result === 'string' && (result.includes('tidak terdaftar') || result.includes('Tunggu') || result.includes('Terlalu banyak'))) {
+      setError(result)
+      return
+    }
+    setDemoCode(result as string)
+    setResendCount((c) => c + 1)
+    startCooldown()
+  }
+
+  const startCooldown = () => {
+    setResendCooldown(60)
+    const interval = setInterval(() => {
+      setResendCooldown((c) => {
+        if (c <= 1) {
+          clearInterval(interval)
+          return 0
+        }
+        return c - 1
+      })
+    }, 1000)
   }
 
   const handleVerifyCode = (e: FormEvent) => {
@@ -52,13 +88,18 @@ export default function ForgotPassword() {
 
   const handleCompleteReset = async () => {
     setLoading(true)
-    const err = await completePasswordReset(email)
+    const result = await completePasswordReset(email)
     setLoading(false)
-    if (err) {
-      setError(err)
-    } else {
-      setStep('done')
+    if (!result) {
+      setError('Gagal mengirim email reset. Silakan coba lagi.')
+      return
     }
+    if (typeof result === 'string') {
+      setError(result)
+      return
+    }
+    setResetLink(result.resetLink)
+    setStep('done')
   }
 
   return (
@@ -70,7 +111,7 @@ export default function ForgotPassword() {
           <p className="auth-subtitle">
             {step === 'email' && 'Lupa Password'}
             {step === 'code' && 'Verifikasi Email'}
-            {step === 'done' && 'Email Terkirim'}
+            {step === 'done' && 'Atur Ulang Password'}
           </p>
         </div>
         {error && <div className="auth-error">{error}</div>}
@@ -118,16 +159,48 @@ export default function ForgotPassword() {
             <p style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', marginTop: 16 }}>
               Demo: kode verifikasi Anda adalah <strong>{demoCode}</strong>
             </p>
+            {resendCount < 3 ? (
+              <button
+                type="button"
+                className="btn btn-outline btn-full"
+                style={{ marginTop: 8 }}
+                disabled={resendCooldown > 0 || loading}
+                onClick={handleResendCode}
+              >
+                {resendCooldown > 0
+                  ? `Kirim Ulang (${resendCooldown}s)`
+                  : loading
+                    ? 'Mengirim...'
+                    : 'Kirim Ulang Kode'}
+              </button>
+            ) : (
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', marginTop: 12 }}>
+                Anda telah mencapai batas maksimal kirim ulang.
+              </p>
+            )}
           </form>
         )}
 
         {step === 'done' && (
           <div>
-            <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5, marginBottom: 20 }}>
-              Kode berhasil diverifikasi! Email untuk mengatur ulang password telah dikirim ke <strong>{email}</strong>.
-              Silakan cek inbox email Anda dan ikuti tautan yang diberikan.
+            <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5, marginBottom: 16 }}>
+              Kode berhasil diverifikasi! Klik tautan di bawah untuk mengatur ulang password Anda:
             </p>
-            <Link to="/login" className="btn btn-primary btn-full">Kembali ke Login</Link>
+            <a
+              href={resetLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary btn-full"
+              style={{ marginBottom: 12, textDecoration: 'none' }}
+            >
+              Buka Tautan Reset Password
+            </a>
+            <p style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.5 }}>
+              Atau salin tautan ini ke browser:{' '}
+              <a href={resetLink} target="_blank" rel="noopener noreferrer" style={{ wordBreak: 'break-all', fontSize: 10 }}>
+                {resetLink}
+              </a>
+            </p>
           </div>
         )}
 

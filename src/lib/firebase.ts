@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: 'AIzaSyCf8wKqR6j3nskzMdI7BuKy-IPR3NXU8C8',
   authDomain: 'managementflowbyaapinn.firebaseapp.com',
   projectId: 'managementflowbyaapinn',
