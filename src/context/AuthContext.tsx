@@ -95,11 +95,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signInWithEmailAndPassword(auth, email, password)
       return null
     } catch (err: unknown) {
-      const e = err as { code?: string }
+      const e = err as { code?: string; message?: string }
+      console.error('Login error:', e.code, e.message)
       if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') return 'Email atau password salah'
       if (e.code === 'auth/invalid-email') return 'Format email tidak valid'
       if (e.code === 'auth/too-many-requests') return 'Terlalu banyak percobaan. Coba lagi nanti.'
-      return 'Terjadi kesalahan. Silakan coba lagi.'
+      if (e.code === 'auth/operation-not-supported') return 'Metode login ini tidak didukung'
+      return `Terjadi kesalahan. ${e.message || 'Silakan coba lagi.'}`
     }
   }, [])
 
@@ -114,11 +116,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await updateProfile(cred.user, { displayName: name })
       return null
     } catch (err: unknown) {
-      const e = err as { code?: string }
+      const e = err as { code?: string; message?: string }
+      console.error('Register error:', e.code, e.message)
       if (e.code === 'auth/email-already-in-use') return 'Email sudah terdaftar'
       if (e.code === 'auth/weak-password') return 'Password terlalu lemah. Minimal 6 karakter.'
       if (e.code === 'auth/invalid-email') return 'Format email tidak valid'
-      return 'Gagal mendaftar. Silakan coba lagi.'
+      if (e.code === 'auth/operation-not-allowed') return 'Pendaftaran email sedang dinonaktifkan. Hubungi admin.'
+      if (e.code === 'auth/too-many-requests') return 'Terlalu banyak percobaan. Coba lagi nanti.'
+      return `Gagal mendaftar. ${e.message || 'Silakan coba lagi.'}`
     }
   }, [])
 
