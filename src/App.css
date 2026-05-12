@@ -809,3 +809,30 @@ tr:hover .row-actions { opacity: 1; }
   .search-filter { gap: 6px; }
   .filter-date { min-width: 0; width: 100%; }
 }
+
+/* ─── Auth Responsive ─── */
+@media (max-width: 480px) {
+  .auth-page { padding: 8px; }
+  .auth-card { padding: 20px 16px; border-radius: 12px; }
+  .auth-logo { width: 36px; height: 36px; font-size: 13px; margin-bottom: 8px; border-radius: 10px; }
+  .auth-header { margin-bottom: 16px; }
+  .auth-title { font-size: 16px; }
+  .auth-subtitle { font-size: 12px; }
+  .form-group { margin-bottom: 10px; gap: 3px; }
+  .form-group input, .form-group select { padding: 7px 10px; font-size: 12px; }
+  .auth-divider { margin: 10px 0; }
+  .auth-links { margin-top: 10px; font-size: 11px; gap: 4px; }
+  .auth-error { padding: 6px 10px; font-size: 11px; margin-bottom: 10px; }
+  .auth-page::before { width: 180px; height: 180px; top: -60px; right: -50px; }
+  .auth-page::after { width: 150px; height: 150px; bottom: -50px; left: -40px; }
+}
+@media (min-width: 481px) and (max-width: 768px) {
+  .auth-card { max-width: 380px; }
+}
+@media (min-width: 1025px) {
+  .auth-card { max-width: 400px; padding: 28px; }
+  .auth-logo { width: 44px; height: 44px; font-size: 15px; }
+  .auth-title { font-size: 20px; }
+  .auth-page::before { width: 400px; height: 400px; top: -140px; right: -100px; }
+  .auth-page::after { width: 320px; height: 320px; bottom: -100px; left: -80px; }
+}
