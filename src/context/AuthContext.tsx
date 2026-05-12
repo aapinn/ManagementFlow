@@ -73,6 +73,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Handle redirect result from Google Sign-In
   useEffect(() => {
+    const hasRedirect = Object.keys(sessionStorage).some((k) =>
+      k.startsWith('firebase:redirectState')
+    )
+    if (!hasRedirect) return
+
     getRedirectResult(auth)
       .then((result) => {
         if (result?.user?.email) {
