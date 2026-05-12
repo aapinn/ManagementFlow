@@ -71,9 +71,22 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+
+/* iOS Safari safe area + dvh support */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+@supports (height: 100dvh) {
+  :root { --vh: 100dvh; }
+}
+@supports not (height: 100dvh) {
+  :root { --vh: 100vh; }
+}
 
 h1, h2, h3, h4 { color: var(--text-h); font-weight: 600; margin: 0; }
 p { margin: 0; }
