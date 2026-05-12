@@ -45,7 +45,7 @@ export default function Layout() {
                   Profile & Pengaturan
                 </button>
                 <hr className="dropdown-divider" />
-                <button className="dropdown-btn dropdown-btn--danger" onClick={() => { logout(); navigate('/login'); setDropdownOpen(false) }}>
+                <button className="dropdown-btn dropdown-btn--danger" onClick={() => { logout(); setDropdownOpen(false) }}>
                   Logout
                 </button>
               </div>

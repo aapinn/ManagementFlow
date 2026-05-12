@@ -60,7 +60,7 @@ export default function Settings() {
           <h3 className="settings-group-title">Akun</h3>
           <div className="settings-row">
             <span>Keluar dari aplikasi</span>
-            <button className="btn btn-danger" onClick={() => { logout(); window.location.href = '/login' }}>
+            <button className="btn btn-danger" onClick={logout}>
               Logout
             </button>
           </div>

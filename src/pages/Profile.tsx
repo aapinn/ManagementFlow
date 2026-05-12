@@ -202,7 +202,7 @@ export default function Profile() {
               <h4 className="settings-group-title">Akun</h4>
               <div className="settings-row">
                 <span>Keluar dari aplikasi</span>
-                <button className="btn btn-danger btn-sm" onClick={() => { logout(); window.location.href = '/login' }}>Logout</button>
+                <button className="btn btn-danger btn-sm" onClick={logout}>Logout</button>
               </div>
             </div>
           </div>
