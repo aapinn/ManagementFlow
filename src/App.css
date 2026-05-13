@@ -2,7 +2,7 @@
    ManagementFlow — Soft, Apple-inspired UI
    ============================================ */
 
-#root { width: 100%; min-height: var(--vh); display: flex; }
+#root { width: 100%; min-height: var(--vh); display: flex; overflow-x: hidden; }
 
 /* ─── Auth ─── */
 .auth-page {
@@ -771,6 +771,7 @@ tr:hover .row-actions { opacity: 1; }
   .tabs { width: 100%; justify-content: center; }
 }
 @media (max-width: 768px) {
+  body { overflow-x: hidden; }
   .sidebar {
     position: fixed; left: 0; top: 0; z-index: 1000; height: var(--vh);
     transform: translateX(-100%); transition: transform 0.25s ease;
