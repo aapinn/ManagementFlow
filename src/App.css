@@ -124,7 +124,7 @@
 .main-content { flex: 1; display: flex; justify-content: center; }
 
 /* ─── Sidebar ─── */
-.sidebar {
+.sidebar { 
   width: 240px; min-width: 240px; background: var(--sidebar-bg);
   border-right: 1px solid var(--border); display: flex;
   flex-direction: column; height: var(--vh); position: sticky; top: 0;
@@ -757,7 +757,7 @@ tr:hover .row-actions { opacity: 1; }
 
 /* ─── Responsive ─── */
 @media (max-width: 1024px) {
-  .app-layout { height: var(--vh); overflow: clip; }
+  .app-layout { height: var(--vh); overflow: hidden; }
   .main-area { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .sidebar {
     position: fixed; left: -240px; top: 0; z-index: 1000; width: 240px; height: var(--vh);
@@ -868,4 +868,15 @@ tr:hover .row-actions { opacity: 1; }
   .auth-title { font-size: 20px; }
   .auth-page::before { width: 400px; height: 400px; top: -140px; right: -100px; }
   .auth-page::after { width: 320px; height: 320px; bottom: -100px; left: -80px; }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+  }
+
+  .app-layout {
+    overflow-x: hidden;
+  }
 }
