@@ -2,7 +2,7 @@
    ManagementFlow — Soft, Apple-inspired UI
    ============================================ */
 
-#root { width: 100%; min-height: var(--vh); display: flex; overflow-x: hidden; }
+#root { width: 100%; min-height: var(--vh); display: flex; }
 
 /* ─── Auth ─── */
 .auth-page {
@@ -757,7 +757,8 @@ tr:hover .row-actions { opacity: 1; }
 
 /* ─── Responsive ─── */
 @media (max-width: 1024px) {
-  body { overflow-x: hidden; }
+  .app-layout { height: var(--vh); overflow: clip; }
+  .main-area { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .sidebar {
     position: fixed; left: -240px; top: 0; z-index: 1000; width: 240px; height: var(--vh);
     transition: left 0.25s ease;
@@ -771,7 +772,7 @@ tr:hover .row-actions { opacity: 1; }
     font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 6px;
   }
   .sidebar-close:hover { background: var(--accent-bg); }
-  .topbar { display: flex; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
+  .topbar { display: flex; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); position: sticky; top: 0; z-index: 100; }
   .page { padding: 24px; }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .grid-2col { grid-template-columns: 1fr; }
