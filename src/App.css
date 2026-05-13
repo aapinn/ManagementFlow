@@ -808,6 +808,13 @@ tr:hover .row-actions { opacity: 1; }
   .settings-row { flex-direction: column; align-items: flex-start; gap: 8px; }
   .search-filter { gap: 6px; }
   .filter-date { min-width: 0; width: 100%; }
+  .filter-select { width: 100%; }
+  .safe-limit-banner { flex-direction: column; align-items: flex-start; }
+  .table td, .table th { padding: 8px 8px; }
+  .table td { white-space: normal; word-break: break-word; }
+  .table th { white-space: nowrap; }
+  .goal-actions { flex-wrap: wrap; }
+  .card-row { flex-wrap: wrap; }
 }
 
 /* ─── Auth Responsive ─── */
@@ -825,6 +832,30 @@ tr:hover .row-actions { opacity: 1; }
   .auth-error { padding: 6px 10px; font-size: 11px; margin-bottom: 10px; }
   .auth-page::before { width: 180px; height: 180px; top: -60px; right: -50px; }
   .auth-page::after { width: 150px; height: 150px; bottom: -50px; left: -40px; }
+}
+@media (max-width: 480px) {
+  body { overflow-x: hidden; }
+  .page { padding: 12px; }
+  .page-header h1 { font-size: 18px; }
+  .page-subtitle { font-size: 12px; }
+  .card-title { font-size: 13px; }
+  .card { padding: 14px; }
+  .stat-mini { padding: 10px 12px; }
+  .stat-mini-value { font-size: 14px; }
+  .flow-bubble-circle { width: 36px; height: 36px; }
+  .flow-bubble-circle svg { width: 14px; height: 14px; }
+  .flow-bubble-value { font-size: 10px; }
+  .flow-bubble-connector { width: 12px; }
+  .flow-bubble-label { font-size: 10px; }
+  .flow-ratio { flex-wrap: wrap; gap: 6px; }
+  .goals-grid { grid-template-columns: 1fr; }
+  .health-insight-grid { gap: 10px; }
+  .modal { padding: 16px; }
+  .modal-title { font-size: 15px; }
+  .hide-mobile { display: none !important; }
+  .table td, .table th { padding: 6px 6px; font-size: 12px; }
+  .summary-value { font-size: 16px; }
+  .budget-kategori { font-size: 13px; }
 }
 @media (min-width: 481px) and (max-width: 768px) {
   .auth-card { max-width: 380px; }

@@ -16,9 +16,9 @@ import { formatRp, highlightMatch } from '../utils/format'
 import type { Income } from '../types'
 import type { SortDir } from '../hooks/useColumnSort'
 
-function SortTh({ label, sortKey, sort, onClick }: { label: string; sortKey: string; sort: { key: string; dir: SortDir }; onClick: (k: string) => void }) {
+function SortTh({ label, sortKey, sort, onClick, className }: { label: string; sortKey: string; sort: { key: string; dir: SortDir }; onClick: (k: string) => void; className?: string }) {
   const icon = sort.key !== sortKey ? ' ↕' : sort.dir === 'asc' ? ' ↑' : ' ↓'
-  return <th style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => onClick(sortKey)}>{label}{icon}</th>
+  return <th className={className} style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => onClick(sortKey)}>{label}{icon}</th>
 }
 
 export default function Pemasukan() {
@@ -107,7 +107,7 @@ export default function Pemasukan() {
           <table className="table">
             <thead>
               <tr>
-                <SortTh label="ID" sortKey="idTransaksi" sort={sort} onClick={toggle} />
+                <SortTh label="ID" sortKey="idTransaksi" sort={sort} onClick={toggle} className="hide-mobile" />
                 <SortTh label="Keterangan" sortKey="keterangan" sort={sort} onClick={toggle} />
                 <SortTh label="Kategori" sortKey="kategori" sort={sort} onClick={toggle} />
                 <SortTh label="Jumlah" sortKey="jumlah" sort={sort} onClick={toggle} />
@@ -123,7 +123,7 @@ export default function Pemasukan() {
               ) : (
                 (sorted as unknown as Income[]).map((t, i) => (
                   <tr key={t.id} className="stagger-item" style={{ animationDelay: `${i * 0.03}s` }}>
-                    <td className="text-mono" dangerouslySetInnerHTML={{ __html: highlightMatch(t.idTransaksi, search) }} />
+                    <td className="text-mono hide-mobile" dangerouslySetInnerHTML={{ __html: highlightMatch(t.idTransaksi, search) }} />
                     <td dangerouslySetInnerHTML={{ __html: highlightMatch(t.keterangan, search) }} />
                     <td><span className="cat-tag">{t.kategori}</span></td>
                     <td className="text-income">{formatRp(t.jumlah)}</td>

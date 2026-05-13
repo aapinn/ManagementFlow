@@ -100,7 +100,7 @@ export default function RecurringIncomeForm() {
                   Rp {r.jumlah.toLocaleString('id-ID')} — Tgl {r.tanggalHari}
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4, flexWrap: 'wrap' }}>
                 <span className="cat-tag">{r.kategori}</span>
                 <span className="text-muted" style={{ fontSize: 11 }}>
                   {r.lastGenerated ? `Terakhir: ${r.lastGenerated}` : 'Belum pernah'}
