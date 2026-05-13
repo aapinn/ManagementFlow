@@ -19,6 +19,18 @@ export default function Layout() {
     return () => document.removeEventListener('mousedown', handle)
   }, [])
 
+  useEffect(() => {
+    setSidebarOpen(false)
+    const handler = () => { if (window.innerWidth <= 1024) setSidebarOpen(false) }
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [sidebarOpen])
+
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
 
   return (
