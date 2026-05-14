@@ -855,19 +855,19 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
   }
 
   .sidebar {
+    display: none;
     position: fixed;
-    left: -240px;
+    left: 0;
     top: 0;
     z-index: 1000;
     width: 240px;
     min-width: 240px;
     height: 100vh;
     min-height: 100vh;
-    transition: left 0.25s ease;
   }
 
   .sidebar--open {
-    left: 0;
+    display: flex;
   }
 
   .sidebar-overlay {
@@ -1193,11 +1193,6 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
   .sidebar {
     width: 220px;
     min-width: 220px;
-    left: -220px;
-  }
-
-  .sidebar--open {
-    left: 0;
   }
 
   .topbar {
