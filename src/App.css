@@ -126,16 +126,16 @@
 .btn-icon--danger:hover { background: rgba(220, 38, 38, 0.08); color: #dc2626; }
 
 /* ─── Layout ─── */
-.app-layout { width: 100%; min-height: 100vh; overflow-x: hidden; }
-.main-area { margin-left: 240px; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+.app-layout { display: flex; width: 100%; min-height: 100vh; overflow-x: hidden; }
+.main-area { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-x: hidden; }
 .main-content { flex: 1; display: flex; justify-content: center; width: 100%; min-width: 0; }
 
 /* ─── Sidebar ─── */
 .sidebar {
-  width: 240px; background: var(--sidebar-bg);
+  width: 240px; min-width: 240px; background: var(--sidebar-bg);
   border-right: 1px solid var(--border); display: flex;
-  flex-direction: column; height: 100vh;
-  position: fixed; left: 0; top: 0; z-index: 1000;
+  flex-direction: column; height: 100vh; min-height: 100vh;
+  position: sticky; top: 0; z-index: 1000;
 }
 .sidebar-header { padding: 18px 16px 14px; border-bottom: 1px solid var(--border-light); }
 .sidebar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
@@ -849,14 +849,20 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
   }
 
   .main-area {
-    margin-left: 0;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
 
   .sidebar {
+    position: fixed;
     left: -240px;
+    top: 0;
+    z-index: 1000;
+    width: 240px;
+    min-width: 240px;
+    height: 100vh;
+    min-height: 100vh;
     transition: left 0.25s ease;
   }
 
@@ -1186,6 +1192,7 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
 
   .sidebar {
     width: 220px;
+    min-width: 220px;
     left: -220px;
   }
 
