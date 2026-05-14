@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useMemo, useEffect, type ReactNode } from 'react'
 import type { Income } from '../types'
 import { useAuth } from './AuthContext'
+import { loadItems, saveItems } from '../lib/firestore'
 
 interface IncomeContextType {
   incomes: Income[]
@@ -9,6 +10,7 @@ interface IncomeContextType {
   deleteIncome: (id: string) => void
   clearIncomes: () => void
   totalIncome: number
+  incomesLoaded: boolean
 }
 
 const IncomeContext = createContext<IncomeContextType | null>(null)
@@ -17,21 +19,26 @@ export function IncomeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [incomes, setIncomes] = useState<Income[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    if (!uid) { setIncomes([]); return }
-    const stored = localStorage.getItem(`incomes_${uid}`)
-    setIncomes(stored ? JSON.parse(stored) : [])
+    if (!uid) { setIncomes([]); setLoaded(true); return }
+    setLoaded(false)
+    loadItems<Income>('incomes', uid).then((data) => {
+      setIncomes(data)
+      setLoaded(true)
+    })
   }, [uid])
 
   const persist = useCallback((next: Income[]) => {
     if (!uid) return
     setIncomes(next)
-    localStorage.setItem(`incomes_${uid}`, JSON.stringify(next))
+    saveItems('incomes', uid, next)
   }, [uid])
 
   const addIncome = useCallback((income: Omit<Income, 'id' | 'tanggal'>) => {
-    persist([{ ...income, id: Date.now().toString(36) + Math.random().toString(36).slice(2, 9), tanggal: new Date().toISOString().split('T')[0] }, ...incomes])
+    const newItem: Income = { ...income, id: Date.now().toString(36) + Math.random().toString(36).slice(2, 9), tanggal: new Date().toISOString().split('T')[0] }
+    persist([newItem, ...incomes])
   }, [incomes, persist])
 
   const updateIncome = useCallback((id: string, data: Partial<Omit<Income, 'id'>>) => {
@@ -46,7 +53,7 @@ export function IncomeProvider({ children }: { children: ReactNode }) {
 
   const totalIncome = useMemo(() => incomes.reduce((s, i) => s + i.jumlah, 0), [incomes])
 
-  return <IncomeContext.Provider value={{ incomes, addIncome, updateIncome, deleteIncome, clearIncomes, totalIncome }}>{children}</IncomeContext.Provider>
+  return <IncomeContext.Provider value={{ incomes, addIncome, updateIncome, deleteIncome, clearIncomes, totalIncome, incomesLoaded: loaded }}>{children}</IncomeContext.Provider>
 }
 
 export function useIncome() {

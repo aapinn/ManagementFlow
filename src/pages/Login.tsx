@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
@@ -7,7 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login, loginWithGoogle, isEmailVerified } = useAuth()
+  const { login, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: FormEvent) => {
@@ -24,7 +25,8 @@ export default function Login() {
       setError(err)
       return
     }
-    if (!isEmailVerified(email)) {
+    const fbUser = auth.currentUser
+    if (fbUser && !fbUser.emailVerified) {
       navigate(`/verify-email?email=${encodeURIComponent(email)}`)
       return
     }

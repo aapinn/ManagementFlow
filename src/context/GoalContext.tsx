@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import type { Goal } from '../types'
 import { useAuth } from './AuthContext'
+import { loadItems, saveItems } from '../lib/firestore'
 
 interface GoalContextType {
   goals: Goal[]
@@ -8,6 +9,7 @@ interface GoalContextType {
   updateGoal: (id: string, data: Partial<Omit<Goal, 'id'>>) => void
   deleteGoal: (id: string) => void
   addToGoal: (id: string, amount: number) => void
+  goalsLoaded: boolean
 }
 
 const GoalContext = createContext<GoalContextType | null>(null)
@@ -16,17 +18,21 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [goals, setGoals] = useState<Goal[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    if (!uid) { setGoals([]); return }
-    const stored = localStorage.getItem(`goals_${uid}`)
-    setGoals(stored ? JSON.parse(stored) : [])
+    if (!uid) { setGoals([]); setLoaded(true); return }
+    setLoaded(false)
+    loadItems<Goal>('goals', uid).then((data) => {
+      setGoals(data)
+      setLoaded(true)
+    })
   }, [uid])
 
   const persist = useCallback((next: Goal[]) => {
     if (!uid) return
     setGoals(next)
-    localStorage.setItem(`goals_${uid}`, JSON.stringify(next))
+    saveItems('goals', uid, next)
   }, [uid])
 
   const addGoal = useCallback((g: Omit<Goal, 'id' | 'createdAt'>) => {
@@ -46,7 +52,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
     persist(goals.map((g) => (g.id === id ? { ...g, currentAmount: g.currentAmount + amount } : g)))
   }, [goals, persist])
 
-  return <GoalContext.Provider value={{ goals, addGoal, updateGoal, deleteGoal, addToGoal }}>{children}</GoalContext.Provider>
+  return <GoalContext.Provider value={{ goals, addGoal, updateGoal, deleteGoal, addToGoal, goalsLoaded: loaded }}>{children}</GoalContext.Provider>
 }
 
 export function useGoal() {

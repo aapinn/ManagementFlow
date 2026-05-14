@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { sendEmailVerification } from 'firebase/auth'
+import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 
 export default function Register() {
@@ -25,12 +27,22 @@ export default function Register() {
     }
     setLoading(true)
     const err = await register(name, email, password)
-    setLoading(false)
     if (err) {
+      setLoading(false)
       setError(err)
-    } else {
-      navigate(`/verify-email?email=${encodeURIComponent(email)}`)
+      return
     }
+    try {
+      if (auth.currentUser) {
+        await sendEmailVerification(auth.currentUser, {
+          url: `${window.location.origin}/dashboard`,
+        })
+      }
+    } catch {
+      // non-critical — user can request again from verify page
+    }
+    setLoading(false)
+    navigate(`/verify-email?email=${encodeURIComponent(email)}`)
   }
 
   const handleGoogle = () => {

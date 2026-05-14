@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import type { Budget } from '../types'
 import { useAuth } from './AuthContext'
+import { loadItems, saveItems } from '../lib/firestore'
 
 interface BudgetContextType {
   budgets: Budget[]
   setBudget: (month: string, kategori: string, amount: number) => void
   removeBudget: (id: string) => void
   getBudget: (month: string, kategori: string) => number
+  budgetsLoaded: boolean
 }
 
 const BudgetContext = createContext<BudgetContextType | null>(null)
@@ -15,11 +17,15 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [budgets, setBudgets] = useState<Budget[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    if (!uid) { setBudgets([]); return }
-    const stored = localStorage.getItem(`budgets_${uid}`)
-    setBudgets(stored ? JSON.parse(stored) : [])
+    if (!uid) { setBudgets([]); setLoaded(true); return }
+    setLoaded(false)
+    loadItems<Budget>('budgets', uid).then((data) => {
+      setBudgets(data)
+      setLoaded(true)
+    })
   }, [uid])
 
   const handleSetBudget = useCallback((month: string, kategori: string, amount: number) => {
@@ -31,7 +37,7 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
       } else {
         next = [...prev, { id: crypto.randomUUID(), month, kategori, amount }]
       }
-      if (uid) localStorage.setItem(`budgets_${uid}`, JSON.stringify(next))
+      if (uid) saveItems('budgets', uid, next)
       return next
     })
   }, [uid])
@@ -39,7 +45,7 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
   const removeBudget = useCallback((id: string) => {
     setBudgets((prev) => {
       const next = prev.filter((b) => b.id !== id)
-      if (uid) localStorage.setItem(`budgets_${uid}`, JSON.stringify(next))
+      if (uid) saveItems('budgets', uid, next)
       return next
     })
   }, [uid])
@@ -52,7 +58,7 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
   )
 
   return (
-    <BudgetContext.Provider value={{ budgets, setBudget: handleSetBudget, removeBudget, getBudget }}>
+    <BudgetContext.Provider value={{ budgets, setBudget: handleSetBudget, removeBudget, getBudget, budgetsLoaded: loaded }}>
       {children}
     </BudgetContext.Provider>
   )

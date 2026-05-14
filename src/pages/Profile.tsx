@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { useIncome } from '../context/IncomeContext'
@@ -8,12 +8,14 @@ import { useGoal } from '../context/GoalContext'
 import { useToast } from '../context/ToastContext'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { ProfileSkeleton } from '../components/PageSkeleton'
+import { loadItems, saveItems } from '../lib/firestore'
 
 type Tab = 'profile' | 'settings'
 
 export default function Profile() {
   const loading = usePageLoading()
   const { user, logout, changePassword } = useAuth()
+  const uid = user?.uid
   const { theme, toggleTheme } = useTheme()
   const { incomes, clearIncomes, totalIncome } = useIncome()
   const { expenses, clearExpenses, totalExpense } = useExpense()
@@ -24,24 +26,29 @@ export default function Profile() {
   const [name, setName] = useState(user?.name || '')
   const [email] = useState(user?.email || '')
   const [saving, setSaving] = useState(false)
-  const [safeLimit, setSafeLimit] = useState(() => {
-    if (!user) return ''
-    return localStorage.getItem(`safeLimit_${user.uid}`) || ''
-  })
+  const [safeLimit, setSafeLimit] = useState('')
   const [pwCurrent, setPwCurrent] = useState('')
   const [pwNew, setPwNew] = useState('')
   const [pwConfirm, setPwConfirm] = useState('')
   const [pwSaving, setPwSaving] = useState(false)
 
+  useEffect(() => {
+    if (!uid) return
+    loadItems<{ value: number }>('settings', uid).then((data) => {
+      const item = data.find((d) => d.value !== undefined)
+      setSafeLimit(item?.value ? String(item.value) : '')
+    })
+  }, [uid])
+
   if (loading) return <ProfileSkeleton />
 
   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    if (user) localStorage.setItem('user', JSON.stringify({ ...user, name }))
-    setTimeout(() => { setSaving(false); showToast('Profil berhasil diperbarui') }, 400)
+    showToast('Profil berhasil diperbarui')
+    setSaving(false)
   }
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -92,17 +99,18 @@ export default function Profile() {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = '.json'
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (!file) return
       const reader = new FileReader()
-      reader.onload = (ev) => {
+      reader.onload = async (ev) => {
         try {
           const data = JSON.parse(ev.target?.result as string)
-          if (data.incomes) localStorage.setItem('incomes', JSON.stringify(data.incomes))
-          if (data.expenses) localStorage.setItem('expenses', JSON.stringify(data.expenses))
-          if (data.budgets) localStorage.setItem('budgets', JSON.stringify(data.budgets))
-          if (data.goals) localStorage.setItem('goals', JSON.stringify(data.goals))
+          if (!uid) { showToast('Silakan login terlebih dahulu', 'error'); return }
+          if (data.incomes) await saveItems('incomes', uid, data.incomes)
+          if (data.expenses) await saveItems('expenses', uid, data.expenses)
+          if (data.budgets) await saveItems('budgets', uid, data.budgets)
+          if (data.goals) await saveItems('goals', uid, data.goals)
           showToast('Data berhasil dipulihkan! Memuat ulang...')
           setTimeout(() => window.location.reload(), 1200)
         } catch { showToast('File backup tidak valid', 'error') }
@@ -110,6 +118,12 @@ export default function Profile() {
       reader.readAsText(file)
     }
     input.click()
+  }
+
+  const handleSaveSafeLimit = async () => {
+    if (!uid) return
+    await saveItems('settings', uid, [{ value: Number(safeLimit) || 0 }])
+    showToast('Batas aman saldo diperbarui')
   }
 
   return (
@@ -195,14 +209,7 @@ export default function Profile() {
                     placeholder="0"
                     style={{ width: 120, padding: '6px 10px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 13, fontFamily: 'var(--sans)', background: 'var(--bg)', color: 'var(--text-h)', outline: 'none' }}
                   />
-                  <button
-                    className="btn btn-primary btn-sm"
-                    onClick={() => {
-                      if (!user) return
-                      localStorage.setItem(`safeLimit_${user.uid}`, safeLimit || '0')
-                      showToast('Batas aman saldo diperbarui')
-                    }}
-                  >
+                  <button className="btn btn-primary btn-sm" onClick={handleSaveSafeLimit}>
                     Simpan
                   </button>
                 </div>

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useMemo, useEffect, type ReactNode } from 'react'
 import type { Expense } from '../types'
 import { useAuth } from './AuthContext'
+import { loadItems, saveItems } from '../lib/firestore'
 
 interface ExpenseContextType {
   expenses: Expense[]
@@ -11,6 +12,7 @@ interface ExpenseContextType {
   totalExpense: number
   averageMonthlyExpense: number
   currentMonthExpense: number
+  expensesLoaded: boolean
 }
 
 const ExpenseContext = createContext<ExpenseContextType | null>(null)
@@ -19,21 +21,26 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [expenses, setExpenses] = useState<Expense[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    if (!uid) { setExpenses([]); return }
-    const stored = localStorage.getItem(`expenses_${uid}`)
-    setExpenses(stored ? JSON.parse(stored) : [])
+    if (!uid) { setExpenses([]); setLoaded(true); return }
+    setLoaded(false)
+    loadItems<Expense>('expenses', uid).then((data) => {
+      setExpenses(data)
+      setLoaded(true)
+    })
   }, [uid])
 
   const persist = useCallback((next: Expense[]) => {
     if (!uid) return
     setExpenses(next)
-    localStorage.setItem(`expenses_${uid}`, JSON.stringify(next))
+    saveItems('expenses', uid, next)
   }, [uid])
 
   const addExpense = useCallback((expense: Omit<Expense, 'id' | 'tanggal'>) => {
-    persist([{ ...expense, id: Date.now().toString(36) + Math.random().toString(36).slice(2, 9), tanggal: new Date().toISOString().split('T')[0] }, ...expenses])
+    const newItem: Expense = { ...expense, id: Date.now().toString(36) + Math.random().toString(36).slice(2, 9), tanggal: new Date().toISOString().split('T')[0] }
+    persist([newItem, ...expenses])
   }, [expenses, persist])
 
   const updateExpense = useCallback((id: string, data: Partial<Omit<Expense, 'id'>>) => {
@@ -66,7 +73,7 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
     return months.reduce((sum, m) => sum + byMonth[m], 0) / months.length
   }, [expenses])
 
-  return <ExpenseContext.Provider value={{ expenses, addExpense, updateExpense, deleteExpense, clearExpenses, totalExpense, averageMonthlyExpense, currentMonthExpense }}>{children}</ExpenseContext.Provider>
+  return <ExpenseContext.Provider value={{ expenses, addExpense, updateExpense, deleteExpense, clearExpenses, totalExpense, averageMonthlyExpense, currentMonthExpense, expensesLoaded: loaded }}>{children}</ExpenseContext.Provider>
 }
 
 export function useExpense() {

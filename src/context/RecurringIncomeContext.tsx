@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import type { RecurringIncome } from '../types'
 import { useAuth } from './AuthContext'
+import { loadItems, saveItems } from '../lib/firestore'
 
 interface RecurringIncomeContextType {
   recurringIncomes: RecurringIncome[]
   addRecurringIncome: (r: Omit<RecurringIncome, 'id' | 'aktif' | 'lastGenerated'>) => void
   updateRecurringIncome: (id: string, data: Partial<Omit<RecurringIncome, 'id'>>) => void
   deleteRecurringIncome: (id: string) => void
+  recurringIncomesLoaded: boolean
 }
 
 const RecurringIncomeContext = createContext<RecurringIncomeContextType | null>(null)
@@ -15,17 +17,21 @@ export function RecurringIncomeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [recurringIncomes, setRecurringIncomes] = useState<RecurringIncome[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    if (!uid) { setRecurringIncomes([]); return }
-    const stored = localStorage.getItem(`recurringIncomes_${uid}`)
-    setRecurringIncomes(stored ? JSON.parse(stored) : [])
+    if (!uid) { setRecurringIncomes([]); setLoaded(true); return }
+    setLoaded(false)
+    loadItems<RecurringIncome>('recurringIncomes', uid).then((data) => {
+      setRecurringIncomes(data)
+      setLoaded(true)
+    })
   }, [uid])
 
   const persist = useCallback((next: RecurringIncome[]) => {
     if (!uid) return
     setRecurringIncomes(next)
-    localStorage.setItem(`recurringIncomes_${uid}`, JSON.stringify(next))
+    saveItems('recurringIncomes', uid, next)
   }, [uid])
 
   const addRecurringIncome = useCallback((r: Omit<RecurringIncome, 'id' | 'aktif' | 'lastGenerated'>) => {
@@ -46,7 +52,7 @@ export function RecurringIncomeProvider({ children }: { children: ReactNode }) {
   }, [recurringIncomes, persist])
 
   return (
-    <RecurringIncomeContext.Provider value={{ recurringIncomes, addRecurringIncome, updateRecurringIncome, deleteRecurringIncome }}>
+    <RecurringIncomeContext.Provider value={{ recurringIncomes, addRecurringIncome, updateRecurringIncome, deleteRecurringIncome, recurringIncomesLoaded: loaded }}>
       {children}
     </RecurringIncomeContext.Provider>
   )

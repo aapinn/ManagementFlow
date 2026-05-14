@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef } from 'react'
+import { useMemo, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useIncome } from '../context/IncomeContext'
 import { useExpense } from '../context/ExpenseContext'
@@ -7,6 +7,7 @@ import { useBudget } from '../context/BudgetContext'
 import { useGoal } from '../context/GoalContext'
 import { useRecurringIncome } from '../context/RecurringIncomeContext'
 import { useRecurringExpense } from '../context/RecurringExpenseContext'
+import { loadItems } from '../lib/firestore'
 import FlowChart from '../components/FlowChart'
 import EmptyState, { EMPTY_ICONS } from '../components/EmptyState'
 import { useCountUp } from '../hooks/useCountUp'
@@ -31,15 +32,25 @@ function dayOfMonth(d: Date = new Date()) {
 export default function Dashboard() {
   const loading = usePageLoading()
   const { user } = useAuth()
+  const uid = user?.uid
   const { incomes, totalIncome } = useIncome()
   const { expenses, totalExpense, currentMonthExpense, averageMonthlyExpense } = useExpense()
   const { budgets } = useBudget()
   const { goals } = useGoal()
   const { recurringIncomes } = useRecurringIncome()
   const { recurringExpenses } = useRecurringExpense()
+  const [safeLimit, setSafeLimit] = useState(0)
+
+  useEffect(() => {
+    if (!uid) { setSafeLimit(0); return }
+    loadItems<{ value: number }>('settings', uid).then((data) => {
+      const item = data.find((d) => d.value !== undefined)
+      setSafeLimit(item?.value ?? 0)
+    })
+  }, [uid])
+
   const saldo = totalIncome - totalExpense
   const totalTrans = incomes.length + expenses.length
-  const safeLimit = Number(localStorage.getItem(user ? `safeLimit_${user.uid}` : 'safeLimit') || '0')
   const saldoBelowSafe = safeLimit > 0 && saldo < safeLimit
   const animIncome = useCountUp(totalIncome)
   const animExpense = useCountUp(totalExpense)
