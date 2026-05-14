@@ -415,11 +415,11 @@ export default function Dashboard() {
               ) : (
                 all.map((t, i) => (
                   <tr key={`${t.id}-${i}`} className="stagger-item" style={{ animationDelay: `${i * 0.05}s` }}>
-                    <td>{t.keterangan}</td>
-                    <td><span className="cat-tag">{t.kategori}</span></td>
-                    <td className={t.type === 'income' ? 'text-income' : 'text-expense'}>Rp {t.jumlah.toLocaleString('id-ID')}</td>
-                    <td className="text-muted">{t.tanggal}</td>
-                    <td><span className={`badge ${t.type === 'income' ? 'badge-income' : 'badge-expense'}`}>{t.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}</span></td>
+                    <td data-label="Keterangan">{t.keterangan}</td>
+                    <td data-label="Kategori"><span className="cat-tag">{t.kategori}</span></td>
+                    <td data-label="Jumlah" className={t.type === 'income' ? 'text-income' : 'text-expense'}>Rp {t.jumlah.toLocaleString('id-ID')}</td>
+                    <td data-label="Tanggal" className="text-muted">{t.tanggal}</td>
+                    <td data-label="Tipe"><span className={`badge ${t.type === 'income' ? 'badge-income' : 'badge-expense'}`}>{t.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}</span></td>
                   </tr>
                 ))
               )}
