@@ -1193,6 +1193,11 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
   .sidebar {
     width: 220px;
     min-width: 220px;
+    left: -220px;
+  }
+
+  .sidebar--open {
+    left: 0;
   }
 
   .topbar {

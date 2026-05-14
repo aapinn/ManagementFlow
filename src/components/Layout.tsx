@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import ToastContainer from './Toast'
 import { useAuth } from '../context/AuthContext'
@@ -8,6 +8,7 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const location = useLocation()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -20,11 +21,11 @@ export default function Layout() {
   }, [])
 
   useEffect(() => {
-    setSidebarOpen(false)
+    if (window.innerWidth <= 1024) setSidebarOpen(false)
     const handler = () => { if (window.innerWidth <= 1024) setSidebarOpen(false) }
     window.addEventListener('resize', handler)
     return () => window.removeEventListener('resize', handler)
-  }, [])
+  }, [location.pathname])
 
   useEffect(() => {
     document.body.style.overflow = sidebarOpen ? 'hidden' : ''
