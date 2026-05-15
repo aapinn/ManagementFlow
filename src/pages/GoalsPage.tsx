@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useGoal } from '../context/GoalContext'
 import { useToast } from '../context/ToastContext'
 import EmptyState, { EMPTY_ICONS } from '../components/EmptyState'
+import RupiahInput from '../components/RupiahInput'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { GoalsSkeleton } from '../components/PageSkeleton'
 import type { Goal } from '../types'
@@ -75,11 +76,11 @@ export default function GoalsPage() {
             <div className="grid-2col">
               <div className="form-group">
                 <label>Target (Rp)</label>
-                <input type="number" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="Jumlah target" required />
+                <RupiahInput value={target} onChange={setTarget} placeholder="Jumlah target" required />
               </div>
               <div className="form-group">
                 <label>Sudah Terkumpul (Rp)</label>
-                <input type="number" value={current} onChange={(e) => setCurrent(e.target.value)} placeholder="0" />
+                <RupiahInput value={current} onChange={setCurrent} placeholder="0" />
               </div>
             </div>
             <div className="form-group">
@@ -128,7 +129,7 @@ export default function GoalsPage() {
                 <div className="goal-actions">
                   {topUp === g.id ? (
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                      <input type="number" value={topUpAmount} onChange={(e) => setTopUpAmount(e.target.value)} placeholder="Jumlah" style={{ width: 120, padding: '4px 8px', border: '1px solid var(--border)', borderRadius: 4, fontSize: 13, fontFamily: 'var(--sans)', background: 'var(--bg)', color: 'var(--text-h)' }} autoFocus />
+                      <RupiahInput value={topUpAmount} onChange={setTopUpAmount} placeholder="Jumlah" style={{ width: 120, padding: '4px 8px', border: '1px solid var(--border)', borderRadius: 4, fontSize: 13, fontFamily: 'var(--sans)', background: 'var(--bg)', color: 'var(--text-h)' }} autoFocus />
                       <button className="btn btn-primary btn-sm" onClick={() => handleTopUp(g.id)}>Tambah</button>
                       <button className="btn btn-outline btn-sm" onClick={() => setTopUp(null)}>Batal</button>
                     </div>

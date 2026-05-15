@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '../data/categories'
 import { useFocusTrap } from '../hooks/useFocusTrap'
+import RupiahInput from './RupiahInput'
 import type { Income, Expense } from '../types'
 
 interface EditModalProps {
@@ -61,7 +62,7 @@ export default function EditModal({ open, transaction, type, onSave, onClose }: 
         <form onSubmit={submit}>
           <div className="form-group">
             <label htmlFor="ejumlah">Jumlah (Rp)</label>
-            <input id="ejumlah" type="number" value={jumlah} onChange={(e) => setJumlah(e.target.value)} required />
+            <RupiahInput id="ejumlah" value={jumlah} onChange={setJumlah} required />
           </div>
           <div className="form-group">
             <label htmlFor="eketerangan">Keterangan</label>

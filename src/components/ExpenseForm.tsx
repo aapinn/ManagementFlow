@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { EXPENSE_CATEGORIES } from '../data/categories'
 import { useExpense } from '../context/ExpenseContext'
 import { useToast } from '../context/ToastContext'
+import RupiahInput from './RupiahInput'
 
 export default function ExpenseForm() {
   const { addExpense, currentMonthExpense, averageMonthlyExpense } = useExpense()
@@ -29,7 +30,7 @@ export default function ExpenseForm() {
       <h3 className="card-title">Tambah Pengeluaran</h3>
       <div className="form-group">
         <label htmlFor="ej">Jumlah (Rp)</label>
-        <input id="ej" type="number" value={jumlah} onChange={(e) => setJumlah(e.target.value)} placeholder="Masukkan jumlah" required />
+        <RupiahInput id="ej" value={jumlah} onChange={setJumlah} placeholder="Masukkan jumlah" required />
       </div>
       <div className="form-group">
         <label htmlFor="ek">Keterangan</label>

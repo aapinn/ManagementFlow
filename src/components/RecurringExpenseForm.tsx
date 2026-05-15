@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { EXPENSE_CATEGORIES } from '../data/categories'
 import { useRecurringExpense } from '../context/RecurringExpenseContext'
 import { useToast } from '../context/ToastContext'
+import RupiahInput from './RupiahInput'
 
 export default function RecurringExpenseForm() {
   const { recurringExpenses, addRecurringExpense, updateRecurringExpense, deleteRecurringExpense } = useRecurringExpense()
@@ -56,7 +57,7 @@ export default function RecurringExpenseForm() {
         <form onSubmit={handleSubmit} style={{ marginTop: 12, paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
           <div className="form-group">
             <label htmlFor="rej">Jumlah (Rp)</label>
-            <input id="rej" type="number" value={jumlah} onChange={(e) => setJumlah(e.target.value)} placeholder="Masukkan jumlah" required />
+            <RupiahInput id="rej" value={jumlah} onChange={setJumlah} placeholder="Masukkan jumlah" required />
           </div>
           <div className="form-group">
             <label htmlFor="rek">Keterangan</label>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { INCOME_CATEGORIES } from '../data/categories'
 import { useRecurringIncome } from '../context/RecurringIncomeContext'
 import { useToast } from '../context/ToastContext'
+import RupiahInput from './RupiahInput'
 
 export default function RecurringIncomeForm() {
   const { recurringIncomes, addRecurringIncome, updateRecurringIncome, deleteRecurringIncome } = useRecurringIncome()
@@ -58,7 +59,7 @@ export default function RecurringIncomeForm() {
         <form onSubmit={handleSubmit} style={{ marginTop: 12, paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
           <div className="form-group">
             <label htmlFor="rij">Jumlah (Rp)</label>
-            <input id="rij" type="number" value={jumlah} onChange={(e) => setJumlah(e.target.value)} placeholder="Masukkan jumlah" required />
+            <RupiahInput id="rij" value={jumlah} onChange={setJumlah} placeholder="Masukkan jumlah" required />
           </div>
           <div className="form-group">
             <label htmlFor="rik">Keterangan</label>

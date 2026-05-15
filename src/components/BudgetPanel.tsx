@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { EXPENSE_CATEGORIES } from '../data/categories'
 import { useBudget } from '../context/BudgetContext'
 import { useExpense } from '../context/ExpenseContext'
+import RupiahInput from './RupiahInput'
 
 export default function BudgetPanel() {
   const { budgets, setBudget, removeBudget } = useBudget()
@@ -61,10 +62,9 @@ export default function BudgetPanel() {
               <span className="budget-amounts">
                 {editing === b.kategori ? (
                   <span className="budget-edit">
-                    <input
-                      type="number"
+                    <RupiahInput
                       value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
+                      onChange={setEditValue}
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveEdit(b.kategori)

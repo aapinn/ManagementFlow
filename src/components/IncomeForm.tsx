@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { INCOME_CATEGORIES } from '../data/categories'
 import { useIncome } from '../context/IncomeContext'
 import { useToast } from '../context/ToastContext'
+import RupiahInput from './RupiahInput'
 
 export default function IncomeForm() {
   const { addIncome } = useIncome()
@@ -25,7 +26,7 @@ export default function IncomeForm() {
       <h3 className="card-title">Tambah Pemasukan</h3>
       <div className="form-group">
         <label htmlFor="ij">Jumlah (Rp)</label>
-        <input id="ij" type="number" value={jumlah} onChange={(e) => setJumlah(e.target.value)} placeholder="Masukkan jumlah" required />
+        <RupiahInput id="ij" value={jumlah} onChange={setJumlah} placeholder="Masukkan jumlah" required />
       </div>
       <div className="form-group">
         <label htmlFor="ik">Keterangan</label>

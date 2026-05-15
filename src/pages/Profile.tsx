@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { ProfileSkeleton } from '../components/PageSkeleton'
 import { loadItems, saveItems } from '../lib/firestore'
+import RupiahInput from '../components/RupiahInput'
 
 type Tab = 'profile' | 'settings'
 
@@ -205,10 +206,9 @@ export default function Profile() {
                   <p className="text-muted" style={{ fontSize: 12, marginTop: 2 }}>Notifikasi jika saldo turun di bawah jumlah ini (0 = nonaktif)</p>
                 </div>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                  <input
-                    type="number"
+                  <RupiahInput
                     value={safeLimit}
-                    onChange={(e) => setSafeLimit(e.target.value)}
+                    onChange={setSafeLimit}
                     placeholder="0"
                     style={{ width: 120, padding: '6px 10px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 13, fontFamily: 'var(--sans)', background: 'var(--bg)', color: 'var(--text-h)', outline: 'none' }}
                   />
