@@ -23,6 +23,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<string | null>
   logout: () => Promise<void>
   isAuthenticated: boolean
+  updateName: (name: string) => Promise<string | null>
   changePassword: (currentPassword: string, newPassword: string) => Promise<string | null>
   sendVerification: () => Promise<string | null>
   reloadUser: () => Promise<void>
@@ -133,6 +134,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const updateName = useCallback(async (name: string): Promise<string | null> => {
+    const fbUser = auth.currentUser
+    if (!fbUser) return 'Anda harus login terlebih dahulu'
+    try {
+      await updateProfile(fbUser, { displayName: name })
+      setUser((prev) => prev ? { ...prev, name } : null)
+      return null
+    } catch {
+      return 'Gagal memperbarui profil. Silakan coba lagi.'
+    }
+  }, [])
+
   const changePassword = useCallback(async (currentPassword: string, newPassword: string): Promise<string | null> => {
     const firebaseUser = auth.currentUser
     if (!firebaseUser || !firebaseUser.email) return 'Anda harus login terlebih dahulu'
@@ -161,6 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         isAuthenticated: !!user,
+        updateName,
         changePassword,
         sendVerification,
         reloadUser,

@@ -14,7 +14,7 @@ type Tab = 'profile' | 'settings'
 
 export default function Profile() {
   const loading = usePageLoading()
-  const { user, logout, changePassword } = useAuth()
+  const { user, logout, updateName, changePassword } = useAuth()
   const uid = user?.uid
   const { theme, toggleTheme } = useTheme()
   const { incomes, clearIncomes, totalIncome } = useIncome()
@@ -46,9 +46,12 @@ export default function Profile() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!name.trim()) { showToast('Nama tidak boleh kosong', 'error'); return }
     setSaving(true)
-    showToast('Profil berhasil diperbarui')
+    const err = await updateName(name.trim())
     setSaving(false)
+    if (err) { showToast(err, 'error'); return }
+    showToast('Profil berhasil diperbarui')
   }
 
   const handleChangePassword = async (e: React.FormEvent) => {
