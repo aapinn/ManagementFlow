@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useMemo, useEffect, t
 import type { Expense } from '../types'
 import { useAuth } from './AuthContext'
 import { loadItems, saveItems } from '../lib/firestore'
+import { showToast } from '../lib/toastBus'
 
 interface ExpenseContextType {
   expenses: Expense[]
@@ -35,7 +36,7 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
   const persist = useCallback((next: Expense[]) => {
     if (!uid) return
     setExpenses(next)
-    saveItems('expenses', uid, next)
+    saveItems('expenses', uid, next).then(() => showToast('Data pengeluaran telah disimpan'))
   }, [uid])
 
   const addExpense = useCallback((expense: Omit<Expense, 'id' | 'tanggal'>) => {

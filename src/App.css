@@ -64,6 +64,11 @@
   background: rgba(220, 38, 38, 0.08);
   padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 12px;
 }
+.auth-warning {
+  font-size: 12px; color: #d97706;
+  background: rgba(217, 119, 6, 0.08);
+  padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 12px;
+}
 .auth-divider {
   display: flex; align-items: center; gap: 12px;
   margin: 14px 0; font-size: 12px; color: var(--text-muted);
@@ -533,6 +538,16 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
 @keyframes toastOut {
   from { opacity: 1; transform: translateY(0) scale(1); }
   to { opacity: 0; transform: translateY(-4px) scale(0.96); }
+}
+
+@media (max-width: 640px) {
+  .toast-container {
+    left: 12px; right: 12px; transform: none;
+    width: auto;
+  }
+  .toast {
+    padding: 12px 12px;
+  }
 }
 
 /* ─── Flow Bubbles ─── */

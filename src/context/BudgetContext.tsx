@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, type React
 import type { Budget } from '../types'
 import { useAuth } from './AuthContext'
 import { loadItems, saveItems } from '../lib/firestore'
+import { showToast } from '../lib/toastBus'
 
 interface BudgetContextType {
   budgets: Budget[]
@@ -28,27 +29,26 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
     })
   }, [uid])
 
-  const handleSetBudget = useCallback((month: string, kategori: string, amount: number) => {
-    setBudgets((prev) => {
-      const existing = prev.find((b) => b.month === month && b.kategori === kategori)
-      let next: Budget[]
-      if (existing) {
-        next = prev.map((b) => (b.id === existing.id ? { ...b, amount } : b))
-      } else {
-        next = [...prev, { id: crypto.randomUUID(), month, kategori, amount }]
-      }
-      if (uid) saveItems('budgets', uid, next)
-      return next
-    })
+  const persist = useCallback((next: Budget[]) => {
+    if (!uid) return
+    setBudgets(next)
+    saveItems('budgets', uid, next).then(() => showToast('Data budget telah disimpan'))
   }, [uid])
 
+  const handleSetBudget = useCallback((month: string, kategori: string, amount: number) => {
+    const existing = budgets.find((b) => b.month === month && b.kategori === kategori)
+    let next: Budget[]
+    if (existing) {
+      next = budgets.map((b) => (b.id === existing.id ? { ...b, amount } : b))
+    } else {
+      next = [...budgets, { id: crypto.randomUUID(), month, kategori, amount }]
+    }
+    persist(next)
+  }, [budgets, persist])
+
   const removeBudget = useCallback((id: string) => {
-    setBudgets((prev) => {
-      const next = prev.filter((b) => b.id !== id)
-      if (uid) saveItems('budgets', uid, next)
-      return next
-    })
-  }, [uid])
+    persist(budgets.filter((b) => b.id !== id))
+  }, [budgets, persist])
 
   const getBudget = useCallback(
     (month: string, kategori: string) => {

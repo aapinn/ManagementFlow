@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, type React
 import type { RecurringIncome } from '../types'
 import { useAuth } from './AuthContext'
 import { loadItems, saveItems } from '../lib/firestore'
+import { showToast } from '../lib/toastBus'
 
 interface RecurringIncomeContextType {
   recurringIncomes: RecurringIncome[]
@@ -31,7 +32,7 @@ export function RecurringIncomeProvider({ children }: { children: ReactNode }) {
   const persist = useCallback((next: RecurringIncome[]) => {
     if (!uid) return
     setRecurringIncomes(next)
-    saveItems('recurringIncomes', uid, next)
+    saveItems('recurringIncomes', uid, next).then(() => showToast('Data pemasukan rutin telah disimpan'))
   }, [uid])
 
   const addRecurringIncome = useCallback((r: Omit<RecurringIncome, 'id' | 'aktif' | 'lastGenerated'>) => {

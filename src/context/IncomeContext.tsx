@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useMemo, useEffect, t
 import type { Income } from '../types'
 import { useAuth } from './AuthContext'
 import { loadItems, saveItems } from '../lib/firestore'
+import { showToast } from '../lib/toastBus'
 
 interface IncomeContextType {
   incomes: Income[]
@@ -33,7 +34,7 @@ export function IncomeProvider({ children }: { children: ReactNode }) {
   const persist = useCallback((next: Income[]) => {
     if (!uid) return
     setIncomes(next)
-    saveItems('incomes', uid, next)
+    saveItems('incomes', uid, next).then(() => showToast('Data pemasukan telah disimpan'))
   }, [uid])
 
   const addIncome = useCallback((income: Omit<Income, 'id' | 'tanggal'>) => {

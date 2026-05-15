@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { sendEmailVerification } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
+import { incrementRateLimit, getRateLimitMessage } from '../lib/rateLimit'
 
 export default function Register() {
   const [name, setName] = useState('')
@@ -17,6 +18,8 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    const limitMsg = getRateLimitMessage('register')
+    if (limitMsg) { setError(limitMsg); return }
     if (!name || !email || !password || !confirmPassword) {
       setError('Silakan isi semua field')
       return
@@ -26,6 +29,7 @@ export default function Register() {
       return
     }
     setLoading(true)
+    incrementRateLimit('register')
     const err = await register(name, email, password)
     if (err) {
       setLoading(false)
@@ -42,7 +46,7 @@ export default function Register() {
       // non-critical — user can request again from verify page
     }
     setLoading(false)
-    navigate(`/verify-email?email=${encodeURIComponent(email)}`)
+    navigate(`/verify-email?email=${encodeURIComponent(email)}&sent=1`)
   }
 
   const handleGoogle = () => {

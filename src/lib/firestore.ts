@@ -11,9 +11,21 @@ export async function loadItems<T>(collection: string, userId: string): Promise<
   }
 }
 
+function clean<T>(data: T): T {
+  if (Array.isArray(data)) return data.map(clean) as T
+  if (data && typeof data === 'object') {
+    const cleaned: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(data as Record<string, unknown>)) {
+      if (v !== undefined) cleaned[k] = clean(v)
+    }
+    return cleaned as T
+  }
+  return data
+}
+
 export async function saveItems<T>(collection: string, userId: string, items: T[]): Promise<void> {
   const ref = doc(db, collection, userId)
-  await setDoc(ref, { items })
+  await setDoc(ref, { items: clean(items) })
 }
 
 export async function deleteItems(collection: string, userId: string): Promise<void> {

@@ -1,10 +1,14 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
-import { sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth'
+import { Link, useSearchParams } from 'react-router-dom'
+import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../lib/firebase'
+import { incrementRateLimit, getRateLimitMessage } from '../lib/rateLimit'
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('')
+  const [searchParams] = useSearchParams()
+  const forced = searchParams.get('force') === '1'
+  const urlEmail = searchParams.get('email') || ''
+  const [email, setEmail] = useState(urlEmail)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -12,18 +16,15 @@ export default function ForgotPassword() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
+    const limitMsg = getRateLimitMessage('forgotPassword')
+    if (limitMsg) { setError(limitMsg); return }
     if (!email) {
       setError('Masukkan email Anda')
       return
     }
     setLoading(true)
+    incrementRateLimit('forgotPassword')
     try {
-      const methods = await fetchSignInMethodsForEmail(auth, email)
-      if (methods.length === 0) {
-        setError('Email tidak terdaftar')
-        setLoading(false)
-        return
-      }
       await sendPasswordResetEmail(auth, email)
       setDone(true)
     } catch {
@@ -40,6 +41,11 @@ export default function ForgotPassword() {
           <h1 className="auth-title">ManagementFlow</h1>
           <p className="auth-subtitle">Lupa Password</p>
         </div>
+        {forced && (
+          <div className="auth-warning">
+            Terlalu banyak percobaan login gagal. Harap reset password Anda untuk keamanan akun.
+          </div>
+        )}
         {error && <div className="auth-error">{error}</div>}
 
         {!done ? (

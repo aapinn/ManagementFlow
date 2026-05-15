@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
+import { recordLoginFailure, resetLoginFailures, shouldForcePasswordReset } from '../lib/rateLimit'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -22,9 +23,16 @@ export default function Login() {
     const err = await login(email, password)
     setLoading(false)
     if (err) {
+      recordLoginFailure(email)
       setError(err)
       return
     }
+    if (shouldForcePasswordReset(email)) {
+      resetLoginFailures(email)
+      navigate(`/forgot-password?email=${encodeURIComponent(email)}&force=1`)
+      return
+    }
+    resetLoginFailures(email)
     const fbUser = auth.currentUser
     if (fbUser && !fbUser.emailVerified) {
       navigate(`/verify-email?email=${encodeURIComponent(email)}`)

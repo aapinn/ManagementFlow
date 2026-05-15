@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
+import { setShowToast } from '../lib/toastBus'
 
 interface Toast {
   id: string
@@ -26,6 +27,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }, [])
+
+  useEffect(() => {
+    setShowToast(showToast)
+  }, [showToast])
 
   return (
     <ToastContext.Provider value={{ toasts, showToast, removeToast }}>

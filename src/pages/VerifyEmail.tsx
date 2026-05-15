@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
+import { incrementRateLimit, getRateLimitMessage } from '../lib/rateLimit'
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
+  const alreadySent = searchParams.get('sent') === '1'
   const [error, setError] = useState('')
-  const [sent, setSent] = useState(false)
+  const [sent, setSent] = useState(alreadySent)
   const [checking, setChecking] = useState(false)
   const { sendVerification, reloadUser } = useAuth()
   const navigate = useNavigate()
@@ -18,11 +20,6 @@ export default function VerifyEmail() {
       navigate('/register', { replace: true })
       return
     }
-    // Kirim email verifikasi otomatis saat halaman dimuat
-    sendVerification().then((err) => {
-      if (err) setError(err)
-      else setSent(true)
-    })
   }, [email]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Poll emailVerified setiap 3 detik
@@ -55,6 +52,9 @@ export default function VerifyEmail() {
 
   const handleResend = async () => {
     setError('')
+    const limitMsg = getRateLimitMessage('verifyEmail')
+    if (limitMsg) { setError(limitMsg); return }
+    incrementRateLimit('verifyEmail')
     const err = await sendVerification()
     if (err) setError(err)
     else setSent(true)

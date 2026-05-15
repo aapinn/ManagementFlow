@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, type React
 import type { Goal } from '../types'
 import { useAuth } from './AuthContext'
 import { loadItems, saveItems } from '../lib/firestore'
+import { showToast } from '../lib/toastBus'
 
 interface GoalContextType {
   goals: Goal[]
@@ -32,7 +33,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   const persist = useCallback((next: Goal[]) => {
     if (!uid) return
     setGoals(next)
-    saveItems('goals', uid, next)
+    saveItems('goals', uid, next).then(() => showToast('Data target telah disimpan'))
   }, [uid])
 
   const addGoal = useCallback((g: Omit<Goal, 'id' | 'createdAt'>) => {
