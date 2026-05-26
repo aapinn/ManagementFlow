@@ -3,8 +3,11 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { incrementRateLimit, getRateLimitMessage } from '../lib/rateLimit'
+import { useDeviceType } from '../hooks/useDeviceType'
+import { IonPage, IonContent } from '@ionic/react'
 
 export default function ForgotPassword() {
+  const isMobile = useDeviceType()
   const [searchParams] = useSearchParams()
   const forced = searchParams.get('force') === '1'
   const urlEmail = searchParams.get('email') || ''
@@ -33,7 +36,7 @@ export default function ForgotPassword() {
     setLoading(false)
   }
 
-  return (
+  const content = (
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
@@ -82,4 +85,16 @@ export default function ForgotPassword() {
       </div>
     </div>
   )
+
+  if (isMobile) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding">
+          {content}
+        </IonContent>
+      </IonPage>
+    )
+  }
+
+  return content
 }

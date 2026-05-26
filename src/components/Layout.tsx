@@ -3,8 +3,11 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import ToastContainer from './Toast'
 import { useAuth } from '../context/AuthContext'
+import MobileLayout from './MobileLayout'
+import { useDeviceType } from '../hooks/useDeviceType'
 
 export default function Layout() {
+  const isMobile = useDeviceType()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -33,6 +36,10 @@ export default function Layout() {
   }, [sidebarOpen])
 
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
+
+  if (isMobile) {
+    return <MobileLayout />
+  }
 
   return (
     <div className="app-layout">

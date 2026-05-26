@@ -4,8 +4,11 @@ import { sendEmailVerification } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { incrementRateLimit, getRateLimitMessage } from '../lib/rateLimit'
+import { useDeviceType } from '../hooks/useDeviceType'
+import { IonPage, IonContent } from '@ionic/react'
 
 export default function Register() {
+  const isMobile = useDeviceType()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -53,7 +56,7 @@ export default function Register() {
     loginWithGoogle()
   }
 
-  return (
+  const content = (
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
@@ -99,4 +102,16 @@ export default function Register() {
       </div>
     </div>
   )
+
+  if (isMobile) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding">
+          {content}
+        </IonContent>
+      </IonPage>
+    )
+  }
+
+  return content
 }

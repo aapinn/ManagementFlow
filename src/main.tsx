@@ -14,6 +14,13 @@ import { ThemeProvider } from './context/ThemeContext'
 import { ToastProvider } from './context/ToastContext'
 import RecurringIncomeAuto from './components/RecurringIncomeAuto'
 import RecurringExpenseAuto from './components/RecurringExpenseAuto'
+import NotificationSetup from './components/NotificationSetup'
+import { setupIonicReact } from '@ionic/react'
+
+/* Basic Ionic core CSS */
+import '@ionic/react/css/core.css'
+
+setupIonicReact()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -29,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
                       <ToastProvider>
                         <RecurringIncomeAuto />
                         <RecurringExpenseAuto />
+                        <NotificationSetup />
                         <App />
                       </ToastProvider>
                     </GoalProvider>

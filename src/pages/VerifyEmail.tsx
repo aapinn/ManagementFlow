@@ -3,8 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { incrementRateLimit, getRateLimitMessage } from '../lib/rateLimit'
+import { useDeviceType } from '../hooks/useDeviceType'
+import { IonPage, IonContent } from '@ionic/react'
 
 export default function VerifyEmail() {
+  const isMobile = useDeviceType()
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
   const alreadySent = searchParams.get('sent') === '1'
@@ -62,7 +65,7 @@ export default function VerifyEmail() {
 
   if (!email) return null
 
-  return (
+  const content = (
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
@@ -92,4 +95,16 @@ export default function VerifyEmail() {
       </div>
     </div>
   )
+
+  if (isMobile) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding">
+          {content}
+        </IonContent>
+      </IonPage>
+    )
+  }
+
+  return content
 }

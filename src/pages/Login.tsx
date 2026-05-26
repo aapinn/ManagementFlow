@@ -3,8 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { recordLoginFailure, resetLoginFailures, shouldForcePasswordReset } from '../lib/rateLimit'
+import { useDeviceType } from '../hooks/useDeviceType'
+import { IonPage, IonContent } from '@ionic/react'
 
 export default function Login() {
+  const isMobile = useDeviceType()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -45,7 +48,7 @@ export default function Login() {
     loginWithGoogle()
   }
 
-  return (
+  const content = (
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
@@ -84,4 +87,16 @@ export default function Login() {
       </div>
     </div>
   )
+
+  if (isMobile) {
+    return (
+      <IonPage>
+        <IonContent className="ion-padding">
+          {content}
+        </IonContent>
+      </IonPage>
+    )
+  }
+
+  return content
 }

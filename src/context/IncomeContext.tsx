@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useCallback, useMemo, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react'
 import type { Income } from '../types'
 import { useAuth } from './AuthContext'
-import { loadItems, saveItems } from '../lib/firestore'
+import { subscribeItems, saveItems } from '../lib/firestore'
 import { showToast } from '../lib/toastBus'
 
 interface IncomeContextType {
@@ -20,20 +20,40 @@ export function IncomeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [incomes, setIncomes] = useState<Income[]>([])
-  const [loaded, setLoaded] = useState(false)
+  const [incomesLoaded, setIncomesLoaded] = useState(false)
+  const unsubRef = useRef<(() => void) | null>(null)
+  const prevDataRef = useRef<Income[]>([])
+  const initialLoadDoneRef = useRef(false)
+  const uidRef = useRef(uid)
 
   useEffect(() => {
-    if (!uid) { setIncomes([]); setLoaded(true); return }
-    setLoaded(false)
-    loadItems<Income>('incomes', uid).then((data) => {
+    uidRef.current = uid
+    if (unsubRef.current) { unsubRef.current(); unsubRef.current = null }
+    if (!uid) { setIncomes([]); setIncomesLoaded(true); return }
+    setIncomesLoaded(false)
+    initialLoadDoneRef.current = false
+    prevDataRef.current = []
+    unsubRef.current = subscribeItems<Income>('incomes', uid, (data) => {
       setIncomes(data)
-      setLoaded(true)
+      if (initialLoadDoneRef.current) {
+        const prevIds = new Set(prevDataRef.current.map((i) => i.id))
+        const newItems = data.filter((i) => !prevIds.has(i.id))
+        for (const item of newItems) {
+          showToast(`Pemasukan: Rp ${item.jumlah.toLocaleString('id-ID')} — ${item.keterangan}`)
+        }
+      } else {
+        initialLoadDoneRef.current = true
+        setIncomesLoaded(true)
+      }
+      prevDataRef.current = data
     })
+    return () => { if (unsubRef.current) { unsubRef.current(); unsubRef.current = null } }
   }, [uid])
 
   const persist = useCallback((next: Income[]) => {
     if (!uid) return
     setIncomes(next)
+    prevDataRef.current = next
     saveItems('incomes', uid, next).then(() => showToast('Data pemasukan telah disimpan'))
   }, [uid])
 
@@ -54,7 +74,7 @@ export function IncomeProvider({ children }: { children: ReactNode }) {
 
   const totalIncome = useMemo(() => incomes.reduce((s, i) => s + i.jumlah, 0), [incomes])
 
-  return <IncomeContext.Provider value={{ incomes, addIncome, updateIncome, deleteIncome, clearIncomes, totalIncome, incomesLoaded: loaded }}>{children}</IncomeContext.Provider>
+  return <IncomeContext.Provider value={{ incomes, addIncome, updateIncome, deleteIncome, clearIncomes, totalIncome, incomesLoaded }}>{children}</IncomeContext.Provider>
 }
 
 export function useIncome() {

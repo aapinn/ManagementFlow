@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useCallback, useMemo, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react'
 import type { Expense } from '../types'
 import { useAuth } from './AuthContext'
-import { loadItems, saveItems } from '../lib/firestore'
+import { subscribeItems, saveItems } from '../lib/firestore'
 import { showToast } from '../lib/toastBus'
 
 interface ExpenseContextType {
@@ -22,20 +22,38 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [expenses, setExpenses] = useState<Expense[]>([])
-  const [loaded, setLoaded] = useState(false)
+  const [expensesLoaded, setExpensesLoaded] = useState(false)
+  const unsubRef = useRef<(() => void) | null>(null)
+  const prevDataRef = useRef<Expense[]>([])
+  const initialLoadDoneRef = useRef(false)
 
   useEffect(() => {
-    if (!uid) { setExpenses([]); setLoaded(true); return }
-    setLoaded(false)
-    loadItems<Expense>('expenses', uid).then((data) => {
+    if (unsubRef.current) { unsubRef.current(); unsubRef.current = null }
+    if (!uid) { setExpenses([]); setExpensesLoaded(true); return }
+    setExpensesLoaded(false)
+    initialLoadDoneRef.current = false
+    prevDataRef.current = []
+    unsubRef.current = subscribeItems<Expense>('expenses', uid, (data) => {
       setExpenses(data)
-      setLoaded(true)
+      if (initialLoadDoneRef.current) {
+        const prevIds = new Set(prevDataRef.current.map((i) => i.id))
+        const newItems = data.filter((i) => !prevIds.has(i.id))
+        for (const item of newItems) {
+          showToast(`Pengeluaran: Rp ${item.jumlah.toLocaleString('id-ID')} — ${item.keterangan}`)
+        }
+      } else {
+        initialLoadDoneRef.current = true
+        setExpensesLoaded(true)
+      }
+      prevDataRef.current = data
     })
+    return () => { if (unsubRef.current) { unsubRef.current(); unsubRef.current = null } }
   }, [uid])
 
   const persist = useCallback((next: Expense[]) => {
     if (!uid) return
     setExpenses(next)
+    prevDataRef.current = next
     saveItems('expenses', uid, next).then(() => showToast('Data pengeluaran telah disimpan'))
   }, [uid])
 
@@ -74,7 +92,7 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
     return months.reduce((sum, m) => sum + byMonth[m], 0) / months.length
   }, [expenses])
 
-  return <ExpenseContext.Provider value={{ expenses, addExpense, updateExpense, deleteExpense, clearExpenses, totalExpense, averageMonthlyExpense, currentMonthExpense, expensesLoaded: loaded }}>{children}</ExpenseContext.Provider>
+  return <ExpenseContext.Provider value={{ expenses, addExpense, updateExpense, deleteExpense, clearExpenses, totalExpense, averageMonthlyExpense, currentMonthExpense, expensesLoaded }}>{children}</ExpenseContext.Provider>
 }
 
 export function useExpense() {

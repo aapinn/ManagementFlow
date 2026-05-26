@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ionic/react": "^8.8.8",
     "firebase": "^12.13.0",
+    "firebase-admin": "^13.10.0",
+    "ionicons": "^8.0.13",
     "lucide-react": "^1.14.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-is": "^19.2.6",
     "react-router-dom": "^7.15.0",
     "recharts": "^3.8.1"
   },

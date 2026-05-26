@@ -9,7 +9,11 @@ import { useToast } from '../context/ToastContext'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { ProfileSkeleton } from '../components/PageSkeleton'
 import { loadItems, saveItems } from '../lib/firestore'
+import { db } from '../lib/firebase'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import RupiahInput from '../components/RupiahInput'
+import { IonIcon } from '@ionic/react'
+import { paperPlane } from 'ionicons/icons'
 
 type Tab = 'profile' | 'settings'
 
@@ -32,6 +36,8 @@ export default function Profile() {
   const [pwNew, setPwNew] = useState('')
   const [pwConfirm, setPwConfirm] = useState('')
   const [pwSaving, setPwSaving] = useState(false)
+  const [botLink, setBotLink] = useState('')
+  const [botCreating, setBotCreating] = useState(false)
 
   useEffect(() => {
     if (!uid) return
@@ -129,6 +135,27 @@ export default function Profile() {
     await saveItems('settings', uid, [{ value: Number(safeLimit) || 0 }])
     showToast('Batas aman saldo diperbarui')
   }
+
+  const handleGenerateBotLink = async () => {
+    if (!uid) return
+    setBotCreating(true)
+    const code = Date.now().toString(36) + Math.random().toString(36).slice(2, 9)
+    try {
+      await setDoc(doc(db, 'botLinks', code), {
+        uid,
+        createdAt: serverTimestamp(),
+        expiresAtTimestamp: Date.now() + 5 * 60 * 1000,
+      })
+      setBotLink(`Kirim kode ini ke bot Telegram:\n\n/link ${code}\n\nKode berlaku 5 menit.`)
+      showToast('Kode berhasil dibuat!')
+    } catch (e) {
+      console.error('Gagal buat kode:', e)
+      showToast('Gagal membuat kode: ' + (e instanceof Error ? e.message : 'unknown'), 'error')
+    }
+    setBotCreating(false)
+  }
+
+
 
   return (
     <div className="page page-animate">
@@ -250,6 +277,32 @@ export default function Profile() {
                   <button type="submit" className="btn btn-primary btn-sm" disabled={pwSaving}>{pwSaving ? 'Menyimpan...' : 'Simpan Password'}</button>
                 </form>
               </div>
+            </div>
+
+            <div className="settings-divider" />
+
+            <div className="settings-group">
+              <h4 className="settings-group-title"><IonIcon icon={paperPlane} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Telegram Bot</h4>
+              <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+                <p className="text-muted" style={{ fontSize: 12, margin: 0 }}>
+                  Catat pemasukan & pengeluaran via Telegram. Hubungkan akun dengan kode sekali pakai.
+                </p>
+                {botLink ? (
+                  <div style={{ background: 'var(--bg-secondary)', padding: 12, borderRadius: 'var(--radius-sm)', fontSize: 13, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                    {botLink}
+                  </div>
+                ) : (
+                  <button className="btn btn-outline btn-sm" onClick={handleGenerateBotLink} disabled={botCreating}>
+                    {botCreating ? 'Membuat kode...' : 'Buat Kode Link'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="settings-divider" />
+
+            <div className="settings-group">
+              <h4 className="settings-group-title">Akun</h4>
               <div className="settings-row">
                 <span>Keluar dari aplikasi</span>
                 <button className="btn btn-danger btn-sm" onClick={logout}>Logout</button>

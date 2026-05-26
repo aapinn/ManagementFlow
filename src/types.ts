@@ -65,3 +65,9 @@ export interface RecurringExpense {
   aktif: boolean
   lastGenerated?: string
 }
+
+export interface BotLink {
+  uid: string
+  createdAt: Date
+  expiresAt: Date
+}

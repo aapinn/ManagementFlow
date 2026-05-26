@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, deleteDoc, onSnapshot, type Unsubscribe } from 'firebase/firestore'
 import { db } from './firebase'
 
 export async function loadItems<T>(collection: string, userId: string): Promise<T[]> {
@@ -31,4 +31,12 @@ export async function saveItems<T>(collection: string, userId: string, items: T[
 export async function deleteItems(collection: string, userId: string): Promise<void> {
   const ref = doc(db, collection, userId)
   await deleteDoc(ref)
+}
+
+export function subscribeItems<T>(collection: string, userId: string, onData: (items: T[]) => void): Unsubscribe {
+  const ref = doc(db, collection, userId)
+  return onSnapshot(ref, (snap) => {
+    const items = snap.exists() ? (snap.data().items as T[]) : []
+    onData(items)
+  })
 }
