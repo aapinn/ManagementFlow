@@ -10,8 +10,13 @@ export default function FlowChart({ totalIncome, totalExpense }: FlowChartProps)
 
   if (!hasData) {
     return (
-      <div className="card">
-        <h3 className="card-title">Alur Keuangan</h3>
+      <div className="card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+        <h3 className="card-title">
+          <span className="card-title-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </span>
+          Alur Keuangan
+        </h3>
         <p className="empty-state" style={{ padding: '32px 0', margin: 0, textAlign: 'center' }}>
           Belum ada data — mulai catat pemasukan dan pengeluaran Anda
         </p>
@@ -20,8 +25,13 @@ export default function FlowChart({ totalIncome, totalExpense }: FlowChartProps)
   }
 
   return (
-    <div className="card" style={{ marginBottom: 24, padding: '28px 24px' }}>
-      <h3 className="card-title" style={{ marginBottom: 28, fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Alur Keuangan</h3>
+    <div className="card" style={{ marginBottom: 24, padding: '28px 24px', '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+      <h3 className="card-title" style={{ marginBottom: 28 }}>
+        <span className="card-title-icon">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        Alur Keuangan
+      </h3>
 
       <div className="flow-bubbles">
         <div className="flow-bubble">

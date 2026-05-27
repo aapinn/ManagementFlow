@@ -93,10 +93,10 @@ export default function Dashboard() {
   })
 
   const stats = [
-    { label: 'Total Pemasukan', raw: animIncome, change: `${incomes.length} transaksi`, up: true },
-    { label: 'Total Pengeluaran', raw: animExpense, change: `${expenses.length} transaksi`, up: false },
-    { label: 'Saldo Bersih', raw: animSaldo, change: saldo >= 0 ? 'Positif' : 'Negatif', up: saldo >= 0 },
-    { label: 'Total Transaksi', raw: animTrans, change: 'Semua waktu', up: true },
+    { label: 'Total Pemasukan', raw: animIncome, change: `${incomes.length} transaksi`, up: true, variant: 'hero' as const },
+    { label: 'Total Pengeluaran', raw: animExpense, change: `${expenses.length} transaksi`, up: false, variant: '' as const },
+    { label: 'Saldo Bersih', raw: animSaldo, change: saldo >= 0 ? 'Positif' : 'Negatif', up: saldo >= 0, variant: '' as const },
+    { label: 'Total Transaksi', raw: animTrans, change: 'Semua waktu', up: true, variant: '' as const },
   ]
 
   const all = [
@@ -246,7 +246,7 @@ export default function Dashboard() {
 
       <div className="stats-row">
         {stats.map((s, i) => (
-          <div key={s.label} className="stat-mini stagger-item" style={{ animationDelay: `${i * 0.06}s` }}>
+          <div key={s.label} className={`stat-mini stat-mini--${s.variant} stagger-item`} style={{ animationDelay: `${i * 0.06}s` }}>
             <span className="stat-mini-label">{s.label}</span>
             {s.label === 'Total Transaksi' ? (
               <span className="stat-mini-value">{s.raw.toLocaleString('id-ID')}</span>
@@ -262,8 +262,11 @@ export default function Dashboard() {
 
       {totalTrans > 0 && (
         <div className="health-insight-grid">
-          <div className="card health-card">
-            <span className="card-title" style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, display: 'block' }}>
+          <div className="card health-card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+            <span className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </span>
               Skor Kesehatan
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -275,7 +278,7 @@ export default function Dashboard() {
                   <span className="health-metric-label">Rasio Tabungan</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div className="health-bar-track">
-                      <div className="health-bar-fill" style={{ width: `${Math.max(0, Math.round(savingsRate * 100))}%`, background: savingsRate >= 0.2 ? '#059669' : '#dc2626' }} />
+                      <div className="health-bar-fill" style={{ width: `${Math.max(0, Math.round(savingsRate * 100))}%`, background: savingsRate >= 0.2 ? 'var(--income)' : 'var(--expense)' }} />
                     </div>
                     <span className={savingsRate >= 0.2 ? 'text-income' : 'text-expense'} style={{ fontSize: 12, fontWeight: 600, minWidth: 40, textAlign: 'right' }}>
                       {Math.round(savingsRate * 100)}%
@@ -286,7 +289,7 @@ export default function Dashboard() {
                   <span className="health-metric-label">Kepatuhan Budget</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div className="health-bar-track">
-                      <div className="health-bar-fill" style={{ width: `${Math.round(budgetHealth * 100)}%`, background: budgetHealth >= 0.7 ? '#059669' : '#d97706' }} />
+                      <div className="health-bar-fill" style={{ width: `${Math.round(budgetHealth * 100)}%`, background: budgetHealth >= 0.7 ? 'var(--income)' : 'var(--budget)' }} />
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 600, minWidth: 40, textAlign: 'right', color: 'var(--text-h)' }}>
                       {Math.round(budgetHealth * 100)}%
@@ -297,8 +300,11 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="card insight-card">
-            <span className="card-title" style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, display: 'block' }}>
+          <div className="card insight-card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+            <span className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </span>
               Ringkasan Bulan Ini
             </span>
             <div className="insight-grid">
@@ -335,8 +341,13 @@ export default function Dashboard() {
       )}
 
       {upcomingRecurring.length > 0 && (
-        <div className="card" style={{ marginBottom: 20 }}>
-          <h3 className="card-title">Akan Datang Bulan Ini</h3>
+        <div className="card" style={{ marginBottom: 20, '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+          <h3 className="card-title">
+            <span className="card-title-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </span>
+            Akan Datang Bulan Ini
+          </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {upcomingRecurring.map((r, i) => (
               <div key={i} className="recurring-upcoming-item">
@@ -355,8 +366,13 @@ export default function Dashboard() {
 
       {totalTrans > 0 && (
         <div className="grid-2col" style={{ marginBottom: 20 }}>
-          <div className="card">
-            <h3 className="card-title">Bulan Ini</h3>
+          <div className="card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </span>
+              Bulan Ini
+            </h3>
             <div className="summary-stats">
               <div className="summary-stat">
                 <span className="summary-stat-label">Pemasukan</span>
@@ -389,8 +405,13 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="card">
-            <h3 className="card-title">7 Hari Terakhir</h3>
+          <div className="card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </span>
+              7 Hari Terakhir
+            </h3>
             {hasData7 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={last7}>
@@ -409,8 +430,13 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="card">
-        <h3 className="card-title">Transaksi Terbaru</h3>
+      <div className="card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+        <h3 className="card-title">
+          <span className="card-title-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </span>
+          Transaksi Terbaru
+        </h3>
         <div className="table-scroll">
           <table className="table">
             <thead>

@@ -70,15 +70,15 @@ export default function Pengeluaran() {
   }
 
   return (
-    <div className="page page-animate">
+    <div className="page page-animate" style={{ '--section-gradient': 'var(--expense-gradient)' } as React.CSSProperties}>
       <div className="page-header">
         <div>
           <h1>Pengeluaran</h1>
           <p className="page-subtitle">Kelola semua pengeluaran Anda</p>
         </div>
         <div className="page-summary">
-          <span className="summary-label">Total Pengeluaran</span>
-          <span className="summary-value">{formatRp(animTotal)}</span>
+          <span className="summary-label" style={{ background: 'var(--expense-bg)', color: 'var(--expense)', padding: '4px 12px', borderRadius: 8, display: 'inline-block' }}>Total Pengeluaran</span>
+          <span className="summary-value" style={{ color: 'var(--expense)' }}>{formatRp(animTotal)}</span>
         </div>
       </div>
 
@@ -89,9 +89,14 @@ export default function Pengeluaran() {
 
       <RecurringExpenseForm />
 
-      <div className="card" style={{ marginTop: 20 }}>
+      <div className="card" style={{ marginTop: 20, '--section-gradient': 'var(--expense-gradient)' } as React.CSSProperties}>
         <div className="card-row">
-          <h3 className="card-title" style={{ marginBottom: 0 }}>Riwayat Pengeluaran</h3>
+          <h3 className="card-title" style={{ marginBottom: 0 }}>
+            <span className="card-title-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </span>
+            Riwayat Pengeluaran
+          </h3>
           <span className="badge badge-expense">{filtered.length} transaksi</span>
         </div>
 

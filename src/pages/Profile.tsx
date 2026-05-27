@@ -158,7 +158,7 @@ export default function Profile() {
 
 
   return (
-    <div className="page page-animate">
+    <div className="page page-animate" style={{ '--section-gradient': 'var(--profile-gradient)' } as React.CSSProperties}>
       <div className="page-header">
         <h1>Profile & Pengaturan</h1>
         <p className="page-subtitle">Kelola akun dan preferensi Anda</p>
@@ -188,10 +188,15 @@ export default function Profile() {
         </button>
       </div>
 
-      <div className="card" style={{ maxWidth: 520 }}>
+      <div className="card" style={{ maxWidth: 520, '--section-gradient': 'var(--profile-gradient)' } as React.CSSProperties}>
         {tab === 'profile' ? (
           <form onSubmit={handleSave}>
-            <h3 className="card-title">Informasi Akun</h3>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              Informasi Akun
+            </h3>
             <div className="form-group">
               <label htmlFor="pn">Nama Lengkap</label>
               <input id="pn" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -203,17 +208,27 @@ export default function Profile() {
             <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan Perubahan'}</button>
 
             <div className="settings-divider" />
-            <h3 className="card-title">Ringkasan Data</h3>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </span>
+              Ringkasan Data
+            </h3>
             <div className="stats-row" style={{ marginBottom: 0 }}>
-              <div className="stat-mini"><span className="stat-mini-label">Pemasukan</span><span className="stat-mini-value text-income">Rp {totalIncome.toLocaleString('id-ID')}</span></div>
-              <div className="stat-mini"><span className="stat-mini-label">Pengeluaran</span><span className="stat-mini-value text-expense">Rp {totalExpense.toLocaleString('id-ID')}</span></div>
-              <div className="stat-mini"><span className="stat-mini-label">Transaksi</span><span className="stat-mini-value">{incomes.length + expenses.length}</span></div>
-              <div className="stat-mini"><span className="stat-mini-label">Target</span><span className="stat-mini-value">{goals.length}</span></div>
+              <div className="stat-mini stat-mini--income"><span className="stat-mini-label">Pemasukan</span><span className="stat-mini-value">Rp {totalIncome.toLocaleString('id-ID')}</span></div>
+              <div className="stat-mini stat-mini--expense"><span className="stat-mini-label">Pengeluaran</span><span className="stat-mini-value">Rp {totalExpense.toLocaleString('id-ID')}</span></div>
+              <div className="stat-mini stat-mini--dashboard"><span className="stat-mini-label">Transaksi</span><span className="stat-mini-value">{incomes.length + expenses.length}</span></div>
+              <div className="stat-mini stat-mini--goals"><span className="stat-mini-label">Target</span><span className="stat-mini-value">{goals.length}</span></div>
             </div>
           </form>
         ) : (
           <div>
-            <h3 className="card-title">Pengaturan</h3>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              </span>
+              Pengaturan
+            </h3>
 
             <div className="settings-group">
               <h4 className="settings-group-title">Tampilan</h4>

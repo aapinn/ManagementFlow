@@ -50,7 +50,7 @@ export default function BudgetPage() {
   }
 
   return (
-    <div className="page">
+    <div className="page" style={{ '--section-gradient': 'var(--budget-gradient)' } as React.CSSProperties}>
       <div className="page-header">
         <div>
           <h1>Budget</h1>
@@ -61,8 +61,13 @@ export default function BudgetPage() {
         </select>
       </div>
 
-      <div className="card">
-        <h3 className="card-title">Budget Pengeluaran — {formatMonth(selectedMonth)}</h3>
+      <div className="card" style={{ '--section-gradient': 'var(--budget-gradient)' } as React.CSSProperties}>
+        <h3 className="card-title">
+          <span className="card-title-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </span>
+          Budget Pengeluaran — {formatMonth(selectedMonth)}
+        </h3>
 
         {monthBudgets.length === 0 && (
           <div style={{ marginBottom: 16 }}><EmptyState icon={EMPTY_ICONS.wallet} title="Belum ada budget" description="Klik 'Tambah Budget' di bawah untuk mengatur target pengeluaran" /></div>

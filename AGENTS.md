@@ -54,12 +54,24 @@ Personal finance management PWA (Indonesian language). All data stored in **Fire
 - **Above-average expense warning**: `ExpenseForm` checks if current month total exceeds average monthly expense, shows warning toast.
 - **Stale component**: `src/components/Dashboard.tsx` has been deleted (use `src/pages/Dashboard.tsx`).
 
-## Key packages
+## Design
 
-- `firebase` v12 — Auth (email/password + Google)
-- `react-router-dom` v7 — routing
-- `recharts` — bar/pie charts
-- `lucide-react` — icons
+- **Font**: Inter (loaded from Google Fonts in `index.html`)
+- **Layout**: Centered container (`max-width: 1340px`) via `#root { justify-content: center }` + `.app-layout { max-width: 1340px }`. Inside: `.app-container` (flex row) wraps `.sidebar` + `.main-area`. Sidebar is `position: sticky; top: 20px; height: calc(100vh - 40px)` on desktop, `position: fixed` (slides in from left) on mobile. Topbar is mobile-only (hamburger + title + avatar dropdown).
+- **Main area scrolling**: On desktop, `.main-area` has `overflow-y: auto` — only the main content scrolls, sidebar stays fixed. `.app-layout` has `height: 100dvh; min-height: 0` so it fits the viewport exactly. `.main-area` also uses `mask-image` with a vertical gradient (transparent → black at top/bottom edges) for a smooth fade-in/out effect when scrolling.
+- **Main area card**: On desktop (`>=1025px`), `.main-area` gets `background: var(--card-bg)`, `border-radius: var(--radius)`, `box-shadow: var(--shadow)` — white card floating inside the outer container.
+- **Sidebar card**: On desktop, `.sidebar` also gets white bg, radius, and shadow — matching main-area. Uses `top: 20px; height: calc(100vh - 40px)` for sticky positioning inside the padded container.
+- **Outer container**: `.app-layout` gets `padding: 20px; box-shadow: var(--shadow-lg); border-radius: 40px` — wraps `.app-container` in a single floating card with outer shadow. `.app-container` provides `gap: 20px` between sidebar and main-area.
+- **Colors**: Emerald green (#0F8B5F accent, #0D5C3D→#1FA46A gradient), white card backgrounds, light gray (#F5F5F5) page bg
+- **Radius system**: cards 22px, small items 14px, pills 999px
+- **Stat cards**: first stat card intended to be hero (full emerald gradient) via `stat-mini--hero` class — but class is only in page code, not yet added to App.css (needs `stat-mini--hero` definition in App.css)
+- **Buttons**: pill shape (999px)
+- **Typography**: Inter, 24px page headings with gradient text
+- **Topbar**: Mobile-only, shows hamburger + title + avatar dropdown on right
+- **Section colors**: defined as CSS variables in `src/index.css` — `--dashboard`, `--income`, `--expense`, `--report`, `--budget`, `--goals`, `--profile` each with bg and gradient variants
+- **Inconsistent state**: Pages reference classes (`stat-mini--hero`, `card-title-icon`) not defined in `App.css` — these render without special styling but don't break functionality.
+
+## Key packages
 
 ## Conventions
 

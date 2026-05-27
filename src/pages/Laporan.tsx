@@ -77,7 +77,7 @@ export default function Laporan() {
   }
 
   return (
-    <div className="page page-animate">
+    <div className="page page-animate" style={{ '--section-gradient': 'var(--report-gradient)' } as React.CSSProperties}>
       <div className="page-header">
         <div>
           <h1>Laporan & Budget</h1>
@@ -92,19 +92,19 @@ export default function Laporan() {
       </div>
 
       <div className="stats-row">
-        <div className="stat-mini stagger-item" style={{ animationDelay: '0s' }}>
+        <div className="stat-mini stat-mini--income stagger-item" style={{ animationDelay: '0s' }}>
           <span className="stat-mini-label">Total Pemasukan</span>
-          <span className="stat-mini-value text-income">Rp {animIncome.toLocaleString('id-ID')}</span>
+          <span className="stat-mini-value">Rp {animIncome.toLocaleString('id-ID')}</span>
         </div>
-        <div className="stat-mini stagger-item" style={{ animationDelay: '0.04s' }}>
+        <div className="stat-mini stat-mini--expense stagger-item" style={{ animationDelay: '0.04s' }}>
           <span className="stat-mini-label">Total Pengeluaran</span>
-          <span className="stat-mini-value text-expense">Rp {animExpense.toLocaleString('id-ID')}</span>
+          <span className="stat-mini-value">Rp {animExpense.toLocaleString('id-ID')}</span>
         </div>
-        <div className="stat-mini stagger-item" style={{ animationDelay: '0.08s' }}>
+        <div className="stat-mini stat-mini--report stagger-item" style={{ animationDelay: '0.08s' }}>
           <span className="stat-mini-label">Saldo Bersih</span>
-          <span className={`stat-mini-value ${saldo >= 0 ? 'text-income' : 'text-expense'}`}>Rp {animSaldo.toLocaleString('id-ID')}</span>
+          <span className="stat-mini-value">{saldo >= 0 ? '' : '−'}Rp {animSaldo.toLocaleString('id-ID')}</span>
         </div>
-        <div className="stat-mini stagger-item" style={{ animationDelay: '0.12s' }}>
+        <div className="stat-mini stat-mini--dashboard stagger-item" style={{ animationDelay: '0.12s' }}>
           <span className="stat-mini-label">Efisiensi</span>
           <span className="stat-mini-value">{totalIncome > 0 ? `${Math.round((1 - totalExpense / totalIncome) * 100)}%` : '0%'}</span>
         </div>
@@ -112,8 +112,13 @@ export default function Laporan() {
 
       <div className="grid-2col">
         {hasData ? (
-          <div className="card">
-            <h3 className="card-title">Grafik Bulanan</h3>
+          <div className="card" style={{ '--section-gradient': 'var(--report-gradient)' } as React.CSSProperties}>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </span>
+              Grafik Bulanan
+            </h3>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -132,8 +137,13 @@ export default function Laporan() {
           </div>
         )}
         {hasData ? (
-          <div className="card">
-            <h3 className="card-title">Tren Saldo Kumulatif</h3>
+          <div className="card" style={{ '--section-gradient': 'var(--report-gradient)' } as React.CSSProperties}>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              </span>
+              Tren Saldo Kumulatif
+            </h3>
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={cumulativeData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -153,8 +163,13 @@ export default function Laporan() {
 
       <div className="grid-2col" style={{ marginBottom: 20 }}>
         <BudgetPanel />
-          <div className="card">
-            <h3 className="card-title">Rekapan Bulanan</h3>
+          <div className="card" style={{ '--section-gradient': 'var(--report-gradient)' } as React.CSSProperties}>
+            <h3 className="card-title">
+              <span className="card-title-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </span>
+              Rekapan Bulanan
+            </h3>
             <div className="table-scroll">
               <table className="table">
                 <thead>

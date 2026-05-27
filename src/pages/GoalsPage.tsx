@@ -54,7 +54,7 @@ export default function GoalsPage() {
   }
 
   return (
-    <div className="page page-animate">
+    <div className="page page-animate" style={{ '--section-gradient': 'var(--goals-gradient)' } as React.CSSProperties}>
       <div className="page-header">
         <div>
           <h1>Target Keuangan</h1>
@@ -66,8 +66,13 @@ export default function GoalsPage() {
       </div>
 
       {showForm && (
-        <div className="card" style={{ marginBottom: 20 }}>
-          <h3 className="card-title">{editId ? 'Edit Target' : 'Target Baru'}</h3>
+        <div className="card" style={{ marginBottom: 20, '--section-gradient': 'var(--goals-gradient)' } as React.CSSProperties}>
+          <h3 className="card-title">
+            <span className="card-title-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </span>
+            {editId ? 'Edit Target' : 'Target Baru'}
+          </h3>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Nama Target</label>

@@ -8,7 +8,8 @@
   width: 100%;
   min-height: 100vh;
   display: flex;
-  overflow-x: hidden;
+  justify-content: center;
+  overflow: clip;
 }
 
 /* ─── Auth ─── */
@@ -16,7 +17,7 @@
   display: flex; align-items: center; justify-content: center;
   height: 100vh; width: 100%;
   padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(135deg, #f0eeff 0%, #faf9f8 50%, #fef7f0 100%);
+  background: linear-gradient(135deg, #F5F5F5 0%, #FFFFFF 50%, #F0FAF5 100%);
   position: relative; overflow: hidden;
 }
 [data-theme='dark'] .auth-page {
@@ -131,16 +132,17 @@
 .btn-icon--danger:hover { background: rgba(220, 38, 38, 0.08); color: #dc2626; }
 
 /* ─── Layout ─── */
-.app-layout { width: 100%; min-height: 100vh; }
-.main-area { margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.app-layout { width: 100%; max-width: 1340px; min-height: 100vh; display: flex; }
+.app-container { display: flex; flex: 1; min-width: 0; }
+.main-area { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
 .main-content { flex: 1; display: flex; justify-content: center; width: 100%; min-width: 0; }
 
 /* ─── Sidebar ─── */
 .sidebar {
-  position: fixed; left: 0; top: 0;
-  width: 240px; background: var(--sidebar-bg);
+  position: sticky; top: 0;
+  width: 240px; min-width: 240px; background: var(--sidebar-bg);
   border-right: 1px solid var(--border); display: flex;
-  flex-direction: column; height: 100vh; z-index: 1000;
+  flex-direction: column; height: 100vh; z-index: 100;
 }
 .sidebar-header { padding: 18px 16px 14px; border-bottom: 1px solid var(--border-light); }
 .sidebar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
@@ -865,10 +867,7 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
   .main-area {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-  }
-
-  .main-area {
-    margin-left: 0;
+    
   }
 
   .sidebar {
@@ -877,6 +876,7 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
     top: 0;
     z-index: 1000;
     width: 240px;
+    min-width: 240px;
     height: 100vh;
     transition: left 0.25s ease;
   }
@@ -1413,6 +1413,39 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
 
 /* ─── Desktop ─── */
 @media (min-width: 1025px) {
+  .app-layout {
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+    border-radius: 40px;
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .app-container {
+    gap: 20px;
+  }
+
+  .sidebar {
+    top: 20px;
+    height: calc(100vh - 40px);
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border-right: none;
+  }
+
+  .main-area {
+    margin: 0;
+    padding: 0;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow-y: auto;
+    min-height: 0;
+    mask-image: linear-gradient(to bottom, transparent, black 20px, black calc(100% - 20px), transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20px, black calc(100% - 20px), transparent);
+  }
+
   .auth-card {
     max-width: 400px;
     padding: 28px;

@@ -43,38 +43,40 @@ export default function Layout() {
 
   return (
     <div className="app-layout">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="main-area">
-        <header className="topbar">
-          <button className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="Buka menu">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-          <span className="topbar-title">ManagementFlow</span>
-          <div className="topbar-right" ref={dropdownRef}>
-            <button className="avatar" onClick={() => setDropdownOpen(!dropdownOpen)}>{initials}</button>
-            {dropdownOpen && (
-              <div className="dropdown">
-                <div className="dropdown-header">
-                  <span className="dropdown-name">{user?.name}</span>
-                  <span className="dropdown-email">{user?.email}</span>
+      <div className="app-container">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="main-area">
+          <header className="topbar">
+            <button className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="Buka menu">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <span className="topbar-title">ManagementFlow</span>
+            <div className="topbar-right" ref={dropdownRef}>
+              <button className="avatar" onClick={() => setDropdownOpen(!dropdownOpen)}>{initials}</button>
+              {dropdownOpen && (
+                <div className="dropdown">
+                  <div className="dropdown-header">
+                    <span className="dropdown-name">{user?.name}</span>
+                    <span className="dropdown-email">{user?.email}</span>
+                  </div>
+                  <hr className="dropdown-divider" />
+                  <button className="dropdown-btn" onClick={() => { navigate('/profile'); setDropdownOpen(false) }}>
+                    Profile & Pengaturan
+                  </button>
+                  <hr className="dropdown-divider" />
+                  <button className="dropdown-btn dropdown-btn--danger" onClick={() => { logout(); setDropdownOpen(false) }}>
+                    Logout
+                  </button>
                 </div>
-                <hr className="dropdown-divider" />
-                <button className="dropdown-btn" onClick={() => { navigate('/profile'); setDropdownOpen(false) }}>
-                  Profile & Pengaturan
-                </button>
-                <hr className="dropdown-divider" />
-                <button className="dropdown-btn dropdown-btn--danger" onClick={() => { logout(); setDropdownOpen(false) }}>
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </header>
-        <main className="main-content">
-          <Outlet />
-        </main>
+              )}
+            </div>
+          </header>
+          <main className="main-content">
+            <Outlet />
+          </main>
+        </div>
       </div>
       <ToastContainer />
     </div>
