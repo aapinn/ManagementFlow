@@ -125,7 +125,7 @@ export default function GoalsPage() {
                   <span className={`goal-pct ${achieved ? 'text-income' : ''}`}>{achieved ? '✓ Tercapai' : `${Math.round(pct)}%`}</span>
                 </div>
                 <div className="budget-bar-track">
-                  <div className={`budget-bar-fill${achieved ? '' : ''}`} style={{ width: `${pct}%`, background: achieved ? '#059669' : 'var(--accent)' }} />
+                  <div className={`budget-bar-fill${achieved ? '' : ''}`} style={{ width: `${pct}%`, background: achieved ? '#00ffd1' : 'var(--accent)' }} />
                 </div>
                 <div className="goal-amounts">
                   Rp {g.currentAmount.toLocaleString('id-ID')} / Rp {g.targetAmount.toLocaleString('id-ID')}

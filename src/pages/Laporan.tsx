@@ -126,8 +126,8 @@ export default function Laporan() {
                 <YAxis tick={{ fontSize: 11, fill: 'var(--text)' }} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="Pemasukan" fill="#059669" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Pengeluaran" fill="#dc2626" radius={[4, 4, 0, 0]} />
+<Bar dataKey="Pemasukan" fill="#00ffd1" radius={[4, 4, 0, 0]} />
+<Bar dataKey="Pengeluaran" fill="#ff7f50" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -150,7 +150,7 @@ export default function Laporan() {
                 <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: 'var(--text)' }} />
                 <YAxis tick={{ fontSize: 11, fill: 'var(--text)' }} />
                 <Tooltip />
-                <Area type="monotone" dataKey="Saldo" stroke="#7c6cf0" fill="rgba(124, 108, 240, 0.15)" strokeWidth={2} />
+                <Area type="monotone" dataKey="Saldo" stroke="#00ffd1" fill="rgba(0, 255, 209, 0.12)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

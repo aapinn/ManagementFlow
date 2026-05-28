@@ -122,7 +122,7 @@ export default function Dashboard() {
     : 1
   const rawScore = savingsRate * 0.5 + budgetHealth * 0.3 + goalHealth * 0.2
   const scoreGrade = rawScore >= 0.8 ? 'A' : rawScore >= 0.6 ? 'B' : rawScore >= 0.4 ? 'C' : rawScore >= 0.2 ? 'D' : 'E'
-  const scoreColor = rawScore >= 0.8 ? '#059669' : rawScore >= 0.6 ? 'var(--accent)' : rawScore >= 0.4 ? '#d97706' : rawScore >= 0.2 ? '#ea580c' : '#dc2626'
+  const scoreColor = rawScore >= 0.8 ? '#00ffd1' : rawScore >= 0.6 ? 'var(--accent)' : rawScore >= 0.4 ? '#d97706' : rawScore >= 0.2 ? '#ea580c' : '#ff7f50'
 
   // ── Top kategori ──
   const topCategory = useMemo(() => {
@@ -228,6 +228,7 @@ export default function Dashboard() {
           <div>
             <h1>Dashboard</h1>
             <p className="page-subtitle">{formatDate()}</p>
+            <span className="page-header-accent" />
           </div>
         </div>
 
@@ -419,8 +420,8 @@ export default function Dashboard() {
                   <XAxis dataKey="hari" tick={{ fontSize: 11, fill: 'var(--text)' }} />
                   <YAxis tick={{ fontSize: 11, fill: 'var(--text)' }} />
                   <Tooltip />
-                  <Bar dataKey="Pemasukan" fill="#059669" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="Pengeluaran" fill="#dc2626" radius={[3, 3, 0, 0]} />
+<Bar dataKey="Pemasukan" fill="#00ffd1" radius={[3, 3, 0, 0]} />
+<Bar dataKey="Pengeluaran" fill="#ff7f50" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

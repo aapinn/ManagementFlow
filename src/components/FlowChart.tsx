@@ -59,7 +59,7 @@ export default function FlowChart({ totalIncome, totalExpense }: FlowChartProps)
             </svg>
           </div>
           <span className="flow-bubble-label">Saldo</span>
-          <span className="flow-bubble-value" style={{ color: saldo >= 0 ? 'var(--accent)' : '#dc2626' }}>
+          <span className="flow-bubble-value" style={{ color: saldo >= 0 ? 'var(--accent)' : '#ff7f50' }}>
             {saldo >= 0 ? '' : '−'}Rp {Math.abs(saldo).toLocaleString('id-ID')}
           </span>
         </div>

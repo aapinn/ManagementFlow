@@ -52,7 +52,6 @@ export default function Layout() {
                 <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
-            <span className="topbar-title">ManagementFlow</span>
             <div className="topbar-right" ref={dropdownRef}>
               <button className="avatar" onClick={() => setDropdownOpen(!dropdownOpen)}>{initials}</button>
               {dropdownOpen && (

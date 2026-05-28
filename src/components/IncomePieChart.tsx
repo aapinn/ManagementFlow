@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { useIncome } from '../context/IncomeContext'
 
-const COLORS = ['#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6']
+const COLORS = ['#6366f1', '#3b82f6', '#00ffd1', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6']
 
 function usePieSize() {
   const [size, setSize] = useState(() => {
