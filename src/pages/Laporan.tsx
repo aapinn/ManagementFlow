@@ -126,8 +126,8 @@ export default function Laporan() {
                 <YAxis tick={{ fontSize: 11, fill: 'var(--text)' }} />
                 <Tooltip />
                 <Legend />
-<Bar dataKey="Pemasukan" fill="#00ffd1" radius={[4, 4, 0, 0]} />
-<Bar dataKey="Pengeluaran" fill="#ff7f50" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Pemasukan" fill="#00ffd1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Pengeluaran" fill="#ff7f50" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -161,7 +161,7 @@ export default function Laporan() {
         )}
       </div>
 
-      <div className="grid-2col" style={{ marginBottom: 20 }}>
+      <div className="grid-2col">
         <BudgetPanel />
           <div className="card" style={{ '--section-gradient': 'var(--report-gradient)' } as React.CSSProperties}>
             <h3 className="card-title">

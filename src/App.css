@@ -5,7 +5,7 @@
 
 /* ─── Mobile Dashboard (EasyFin-style) ─── */
 .mob-dashboard {
-  padding: 16px 16px 80px;
+  padding: 16px 16px ;
   display: flex;
   flex-direction: column;
   gap: 20px;

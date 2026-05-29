@@ -256,19 +256,20 @@ export default function Dashboard() {
         <div className="mob-stats-row">
           <div className="mob-stat-card">
             <svg className="mob-stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" />
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
             </svg>
             <span className="mob-stat-label">Total Pemasukan</span>
-            <span className="mob-stat-value">Rp. {monthIncome.toLocaleString('id-ID')}</span>
-            <span className="mob-stat-change mob-stat-change--up">{incomes.length} transaksi</span>
+            <span className="mob-stat-value" style={{ color: 'var(--income)' }}>Rp. {monthIncome.toLocaleString('id-ID')}</span>
+            <span className="mob-stat-change ">{incomes.length} transaksi</span>
           </div>
           <div className="mob-stat-card">
             <svg className="mob-stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
+              
+              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" />
             </svg>
             <span className="mob-stat-label">Total Pengeluaran</span>
-            <span className="mob-stat-value">Rp. {monthExpense.toLocaleString('id-ID')}</span>
-            <span className="mob-stat-change mob-stat-change--up">{expenses.length} transaksi</span>
+            <span className="mob-stat-value" style={{ color: 'var(--expense)' }}>Rp. {monthExpense.toLocaleString('id-ID')}</span>
+            <span className="mob-stat-change ">{expenses.length} transaksi</span>
           </div>
         </div>
 
@@ -292,7 +293,7 @@ export default function Dashboard() {
         {/* ── Kesehatan & Ringkasan ── */}
         {totalTrans > 0 && (
           <>
-            <div className="health-insight-grid" style={{ margin: 0 }}>
+            <div className="health-insight-grid" style={{ margin: 0 , gap: 20}}>
               <div className="card health-card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
                 <span className="card-title">
                   <span className="card-title-icon">
