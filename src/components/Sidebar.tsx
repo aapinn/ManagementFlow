@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { useBudget } from '../context/BudgetContext'
@@ -58,6 +58,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { theme, toggleTheme } = useTheme()
   const { budgets } = useBudget()
   const { expenses } = useExpense()
+  const location = useLocation()
   const navigate = useNavigate()
 
   const thisMonth = new Date().toISOString().slice(0, 7)
@@ -85,7 +86,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
       <aside className={`sidebar${isOpen ? ' sidebar--open' : ''}`}>
         <div className="sidebar-header">
-          <NavLink to="/dashboard" className="sidebar-brand" onClick={onClose}>
+          <NavLink to="/dashboard" className="sidebar-brand" onClick={() => { if (location.pathname === '/dashboard') onClose() }}>
             <span className="brand-icon">MF</span>
             <span className="brand-name">ManagementFlow</span>
           </NavLink>
@@ -93,7 +94,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
         <nav className="sidebar-nav">
           {navItems.map(({ label, icon, path, badge }) => (
-            <NavLink key={label} to={path} end className={({ isActive }) => `nav-item${isActive ? ' nav-item--active' : ''}`} onClick={onClose}>
+            <NavLink key={label} to={path} end className={({ isActive }) => `nav-item${isActive ? ' nav-item--active' : ''}`} onClick={() => { if (location.pathname === path) onClose() }}>
               <span className="nav-icon">{icon}</span>
               <span style={{ flex: 1 }}>{label}</span>
               {badge !== undefined && <span className="nav-badge">{badge}</span>}

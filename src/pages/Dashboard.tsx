@@ -14,6 +14,7 @@ import { useCountUp } from '../hooks/useCountUp'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { DashboardSkeleton } from '../components/PageSkeleton'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useDeviceType } from '../hooks/useDeviceType'
 
 function formatDate(): string {
   return new Date().toLocaleDateString('id-ID', {
@@ -31,6 +32,7 @@ function dayOfMonth(d: Date = new Date()) {
 
 export default function Dashboard() {
   const loading = usePageLoading()
+  const isMobile = useDeviceType()
   const { user } = useAuth()
   const uid = user?.uid
   const { incomes, totalIncome } = useIncome()
@@ -221,6 +223,283 @@ export default function Dashboard() {
   }, [loading])
 
   if (loading) return <DashboardSkeleton />
+
+  if (isMobile) {
+    const absSaldo = Math.abs(saldo)
+    const growthAmount = saldo > 0 ? monthIncome - monthExpense : 0
+    const growthPct = monthExpense > 0 ? Math.round(((monthIncome - monthExpense) / monthExpense) * 100) : 0
+
+    return (
+      <div className="mob-dashboard">
+        {/* ── Header ── */}
+        <div className="mob-header">
+          <div className="mob-header-left">
+            <span className="mob-greeting">Welcome Back 👋</span>
+            <h1 className="mob-username">{user?.name || 'User'}</h1>
+          </div>
+        </div>
+
+        {/* ── Balance Card ── */}
+        <div className="mob-balance-card">
+          <div className="mob-balance-top">
+            <span className="mob-balance-label">Saldo Bersih</span>
+          </div>
+          <div className="mob-balance-amount">Rp. {absSaldo.toLocaleString('id-ID')}</div>
+          <div className="mob-balance-growth">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
+            </svg>
+            <span>+{growthAmount.toLocaleString('id-ID')} &bull; +{growthPct}%</span>
+          </div>
+        </div>
+        {/* ── Stats Row ── */}
+        <div className="mob-stats-row">
+          <div className="mob-stat-card">
+            <svg className="mob-stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" />
+            </svg>
+            <span className="mob-stat-label">Total Pemasukan</span>
+            <span className="mob-stat-value">Rp. {monthIncome.toLocaleString('id-ID')}</span>
+            <span className="mob-stat-change mob-stat-change--up">{incomes.length} transaksi</span>
+          </div>
+          <div className="mob-stat-card">
+            <svg className="mob-stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
+            </svg>
+            <span className="mob-stat-label">Total Pengeluaran</span>
+            <span className="mob-stat-value">Rp. {monthExpense.toLocaleString('id-ID')}</span>
+            <span className="mob-stat-change mob-stat-change--up">{expenses.length} transaksi</span>
+          </div>
+        </div>
+
+        {/* ── Safe Limit Banner ── */}
+        {saldoBelowSafe && (
+          <div className="safe-limit-banner" style={{ margin: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <div className="safe-limit-banner-body">
+              <strong>Saldo di bawah batas aman!</strong>
+              <p>Saldo saat ini Rp {saldo.toLocaleString('id-ID')} — di bawah batas aman Rp {safeLimit.toLocaleString('id-ID')}. Atur di Profile & Pengaturan.</p>
+            </div>
+          </div>
+        )}
+
+        {/* ── Alur Keuangan ── */}
+        <FlowChart totalIncome={totalIncome} totalExpense={totalExpense} />
+
+        {/* ── Kesehatan & Ringkasan ── */}
+        {totalTrans > 0 && (
+          <>
+            <div className="health-insight-grid" style={{ margin: 0 }}>
+              <div className="card health-card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+                <span className="card-title">
+                  <span className="card-title-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  </span>
+                  Skor Kesehatan
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div className="health-score-ring" style={{ borderColor: scoreColor }}>
+                    <span style={{ color: scoreColor, fontSize: 22, fontWeight: 700 }}>{scoreGrade}</span>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className="health-metric">
+                      <span className="health-metric-label">Rasio Tabungan</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div className="health-bar-track">
+                          <div className="health-bar-fill" style={{ width: `${Math.max(0, Math.round(savingsRate * 100))}%`, background: savingsRate >= 0.2 ? 'var(--income)' : 'var(--expense)' }} />
+                        </div>
+                        <span className={savingsRate >= 0.2 ? 'text-income' : 'text-expense'} style={{ fontSize: 12, fontWeight: 600, minWidth: 40, textAlign: 'right' }}>
+                          {Math.round(savingsRate * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="health-metric">
+                      <span className="health-metric-label">Kepatuhan Budget</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div className="health-bar-track">
+                          <div className="health-bar-fill" style={{ width: `${Math.round(budgetHealth * 100)}%`, background: budgetHealth >= 0.7 ? 'var(--income)' : 'var(--budget)' }} />
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 600, minWidth: 40, textAlign: 'right', color: 'var(--text-h)' }}>
+                          {Math.round(budgetHealth * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card insight-card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+                <span className="card-title">
+                  <span className="card-title-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  </span>
+                  Ringkasan Bulan Ini
+                </span>
+                <div className="insight-grid">
+                  <div className="insight-item">
+                    <span className="insight-label">Efisiensi</span>
+                    <span className="insight-value" style={{ fontWeight: 600 }}>
+                      {totalIncome > 0 ? `${Math.round((1 - totalExpense / totalIncome) * 100)}%` : '0%'}
+                    </span>
+                  </div>
+                  {dailyAvgExpense > 0 && (
+                    <div className="insight-item">
+                      <span className="insight-label">Rata-rata/hari</span>
+                      <span className="insight-value">Rp {dailyAvgExpense.toLocaleString('id-ID')}</span>
+                    </div>
+                  )}
+                  {topCategory && (
+                    <div className="insight-item">
+                      <span className="insight-label">Terbanyak</span>
+                      <span className="insight-value" style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span className="cat-tag">{topCategory.name}</span>
+                        Rp {topCategory.amount.toLocaleString('id-ID')}
+                      </span>
+                    </div>
+                  )}
+                  {overBudgetCount > 0 && (
+                    <div className="insight-item">
+                      <span className="insight-label">Budget Over</span>
+                      <span className="insight-value text-expense">{overBudgetCount} kategori</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Akan Datang ── */}
+            {upcomingRecurring.length > 0 && (
+              <div className="card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+                <h3 className="card-title">
+                  <span className="card-title-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </span>
+                  Akan Datang Bulan Ini
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {upcomingRecurring.map((r, i) => (
+                    <div key={i} className="recurring-upcoming-item">
+                      <div className="recurring-upcoming-left">
+                        <span className="recurring-upcoming-day">Tgl {r.hari}</span>
+                        <span className="recurring-upcoming-label">{r.label}</span>
+                      </div>
+                      <span className={r.type === 'income' ? 'text-income' : 'text-expense'} style={{ fontWeight: 600, fontSize: 13 }}>
+                        {r.type === 'income' ? '+' : '−'}Rp {r.jumlah.toLocaleString('id-ID')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Bulan Ini & 7 Hari ── */}
+            <div className="grid-2col" style={{ margin: 0 }}>
+              <div className="card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+                <h3 className="card-title">
+                  <span className="card-title-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </span>
+                  Bulan Ini
+                </h3>
+                <div className="summary-stats">
+                  <div className="summary-stat">
+                    <span className="summary-stat-label">Pemasukan</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span className="summary-stat-value text-income">Rp {animMonthIncome.toLocaleString('id-ID')}</span>
+                      {prevMonthIncome > 0 && (
+                        <span className={`stat-mini-change stat-mini-change--${incomeChange >= 0 ? 'up' : 'down'}`}>
+                          {incomeChange >= 0 ? '+' : ''}{incomeChange}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="summary-stat">
+                    <span className="summary-stat-label">Pengeluaran</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span className="summary-stat-value text-expense">Rp {animMonthExpense.toLocaleString('id-ID')}</span>
+                      {prevMonthExpense > 0 && (
+                        <span className={`stat-mini-change stat-mini-change--${expenseChange <= 0 ? 'up' : 'down'}`}>
+                          {expenseChange >= 0 ? '+' : ''}{expenseChange}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="summary-divider" />
+                  <div className="summary-stat">
+                    <span className="summary-stat-label">Saldo Bulan Ini</span>
+                    <span className={`summary-stat-value ${monthIncome - monthExpense >= 0 ? 'text-income' : 'text-expense'}`}>
+                      Rp {(monthIncome - monthExpense).toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+                <h3 className="card-title">
+                  <span className="card-title-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  </span>
+                  7 Hari Terakhir
+                </h3>
+                {hasData7 ? (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={last7}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="hari" tick={{ fontSize: 11, fill: 'var(--text)' }} />
+                      <YAxis tick={{ fontSize: 11, fill: 'var(--text)' }} />
+                      <Tooltip />
+                      <Bar dataKey="Pemasukan" fill="#00ffd1" radius={[3, 3, 0, 0]} />
+                      <Bar dataKey="Pengeluaran" fill="#ff7f50" radius={[3, 3, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <EmptyState icon={EMPTY_ICONS.chart} title="Data 7 hari" description="Grafik akan muncul setelah ada transaksi minggu ini" />
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── Transaksi Terbaru ── */}
+        <div className="card" style={{  '--section-gradient': 'var(--dashboard-gradient)' } as React.CSSProperties}>
+          <h3 className="card-title">
+            <span className="card-title-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </span>
+            Transaksi Terbaru
+          </h3>
+          <div className="table-scroll">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Keterangan</th><th>Kategori</th><th>Jumlah</th><th>Tanggal</th><th>Tipe</th>
+                </tr>
+              </thead>
+              <tbody>
+                {all.length === 0 ? (
+                  <tr><td colSpan={5} style={{ padding: 0 }}>
+                    <EmptyState icon={EMPTY_ICONS.wallet} title="Belum ada transaksi" description="Mulai catat pemasukan atau pengeluaran pertama Anda" />
+                  </td></tr>
+                ) : (
+                  all.map((t, i) => (
+                    <tr key={`${t.id}-${i}`} className="stagger-item" style={{ animationDelay: `${i * 0.05}s` }}>
+                      <td data-label="Keterangan">{t.keterangan}</td>
+                      <td data-label="Kategori"><span className="cat-tag">{t.kategori}</span></td>
+                      <td data-label="Jumlah" className={t.type === 'income' ? 'text-income' : 'text-expense'}>Rp {t.jumlah.toLocaleString('id-ID')}</td>
+                      <td data-label="Tanggal" className="text-muted">{t.tanggal}</td>
+                      <td data-label="Tipe"><span className={`badge ${t.type === 'income' ? 'badge-income' : 'badge-expense'}`}>{t.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}</span></td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
       <div className="page page-animate">
@@ -420,8 +699,8 @@ export default function Dashboard() {
                   <XAxis dataKey="hari" tick={{ fontSize: 11, fill: 'var(--text)' }} />
                   <YAxis tick={{ fontSize: 11, fill: 'var(--text)' }} />
                   <Tooltip />
-<Bar dataKey="Pemasukan" fill="#00ffd1" radius={[3, 3, 0, 0]} />
-<Bar dataKey="Pengeluaran" fill="#ff7f50" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="Pemasukan" fill="#00ffd1" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="Pengeluaran" fill="#ff7f50" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
