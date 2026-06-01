@@ -109,6 +109,7 @@ export default function Dashboard() {
   const hasData7 = last7.some((d) => d.Pemasukan > 0 || d.Pengeluaran > 0)
   const animMonthIncome = useCountUp(monthIncome)
   const animMonthExpense = useCountUp(monthExpense)
+  const animMonthSaldo = useCountUp(Math.abs(monthIncome - monthExpense))
 
   // ── Skor Kesehatan ──
   const savingsRate = monthIncome > 0 ? (monthIncome - monthExpense) / monthIncome : 0
@@ -225,7 +226,6 @@ export default function Dashboard() {
   if (loading) return <DashboardSkeleton />
 
   if (isMobile) {
-    const absSaldo = Math.abs(saldo)
     const growthAmount = saldo > 0 ? monthIncome - monthExpense : 0
     const growthPct = monthExpense > 0 ? Math.round(((monthIncome - monthExpense) / monthExpense) * 100) : 0
 
@@ -244,7 +244,7 @@ export default function Dashboard() {
           <div className="mob-balance-top">
             <span className="mob-balance-label">Saldo Bersih</span>
           </div>
-          <div className="mob-balance-amount">Rp. {absSaldo.toLocaleString('id-ID')}</div>
+          <div className="mob-balance-amount">Rp. {animSaldo.toLocaleString('id-ID')}</div>
           <div className="mob-balance-growth">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
@@ -259,7 +259,7 @@ export default function Dashboard() {
               <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
             </svg>
             <span className="mob-stat-label">Total Pemasukan</span>
-            <span className="mob-stat-value" style={{ color: 'var(--income)' }}>Rp. {monthIncome.toLocaleString('id-ID')}</span>
+            <span className="mob-stat-value" style={{ color: 'var(--income)' }}>Rp. {animMonthIncome.toLocaleString('id-ID')}</span>
             <span className="mob-stat-change ">{incomes.length} transaksi</span>
           </div>
           <div className="mob-stat-card">
@@ -268,7 +268,7 @@ export default function Dashboard() {
               <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" />
             </svg>
             <span className="mob-stat-label">Total Pengeluaran</span>
-            <span className="mob-stat-value" style={{ color: 'var(--expense)' }}>Rp. {monthExpense.toLocaleString('id-ID')}</span>
+            <span className="mob-stat-value" style={{ color: 'var(--expense)' }}>Rp. {animMonthExpense.toLocaleString('id-ID')}</span>
             <span className="mob-stat-change ">{expenses.length} transaksi</span>
           </div>
         </div>
@@ -432,7 +432,7 @@ export default function Dashboard() {
                   <div className="summary-stat">
                     <span className="summary-stat-label">Saldo Bulan Ini</span>
                     <span className={`summary-stat-value ${monthIncome - monthExpense >= 0 ? 'text-income' : 'text-expense'}`}>
-                      Rp {(monthIncome - monthExpense).toLocaleString('id-ID')}
+                      Rp {animMonthSaldo.toLocaleString('id-ID')}
                     </span>
                   </div>
                 </div>
