@@ -1805,3 +1805,147 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
     left: -80px;
   }
 }
+
+/* ─── Riwayat Page ─── */
+.riwayat-summary {
+  display: flex; gap: 16px; flex-shrink: 0;
+}
+.riwayat-summary-item {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.riwayat-summary-label {
+  font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.riwayat-summary-value {
+  font-size: 18px; font-weight: 700;
+}
+
+.riwayat-type-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.riwayat-type-badge--income {
+  background: rgba(0, 204, 170, 0.12); color: #00ccaa;
+}
+.riwayat-type-badge--expense {
+  background: rgba(255, 127, 80, 0.12); color: #ff7f50;
+}
+
+.riwayat-keterangan {
+  font-weight: 500; color: var(--text-h);
+}
+.riwayat-tanggal {
+  font-size: 12px; color: var(--text-muted);
+}
+.riwayat-id {
+  font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+}
+
+/* ─── DataTable (shadcn-style) ─── */
+.datatable-wrapper {
+  overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;
+}
+
+.datatable {
+  width: 100%; border-collapse: collapse;
+}
+.datatable th {
+  text-align: left; padding: 10px 14px;
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-muted); white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+.datatable th:hover {
+  color: var(--text-h);
+}
+.datatable-sort-icon {
+  opacity: 0.4; margin-left: 2px;
+}
+.datatable th:hover .datatable-sort-icon {
+  opacity: 1;
+}
+.datatable td {
+  padding: 12px 14px; font-size: 13px;
+  color: var(--text-h); white-space: nowrap;
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.15s;
+}
+.datatable tbody tr {
+  transition: background 0.15s;
+}
+.datatable tbody tr:hover td {
+  background: var(--accent-bg);
+}
+.datatable tbody tr:last-child td {
+  border-bottom: none;
+}
+.datatable-actions-th {
+  width: 80px; text-align: right;
+}
+
+.datatable-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px; padding: 48px 24px;
+  text-align: center;
+}
+.datatable-empty-title {
+  font-size: 14px; font-weight: 600; color: var(--text-muted);
+}
+.datatable-empty-desc {
+  font-size: 12px; color: var(--text-muted); max-width: 280px;
+}
+
+/* Mobile cards (hidden on desktop) */
+.datatable-cards {
+  display: none;
+}
+
+.datatable-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 12px; padding: 14px 16px;
+  margin-bottom: 8px;
+}
+.datatable-card-field {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 8px;
+  padding: 4px 0;
+}
+.datatable-card-field + .datatable-card-field {
+  border-top: 1px solid var(--border-light);
+  margin-top: 4px; padding-top: 8px;
+}
+.datatable-card-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 0.04em; flex-shrink: 0;
+}
+.datatable-card-value {
+  font-size: 13px; color: var(--text-h); text-align: right;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .datatable-wrapper {
+    display: none;
+  }
+  .datatable-cards {
+    display: flex; flex-direction: column;
+  }
+
+  .riwayat-summary {
+    flex-direction: column; gap: 4px;
+  }
+}
+
+@media (min-width: 769px) {
+  .datatable-wrapper {
+    display: block;
+  }
+  .datatable-cards {
+    display: none;
+  }
+}

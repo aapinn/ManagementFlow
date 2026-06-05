@@ -10,6 +10,7 @@ import Laporan from './pages/Laporan'
 import BudgetPage from './pages/BudgetPage'
 import GoalsPage from './pages/GoalsPage'
 import Profile from './pages/Profile'
+import Riwayat from './pages/Riwayat'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/goals" element={<GoalsPage />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/riwayat" element={<Riwayat />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
