@@ -65,6 +65,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const overBudgetCount = useMemo(() => {
     return budgets.filter((b) => {
       if (b.month !== thisMonth) return false
+      if (b.amount <= 0) return false
       const spent = expenses.filter((e) => e.tanggal.startsWith(thisMonth) && e.kategori === b.kategori).reduce((s, e) => s + e.jumlah, 0)
       return spent > b.amount
     }).length

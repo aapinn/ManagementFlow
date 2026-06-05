@@ -56,7 +56,7 @@ export default function Profile() {
   const getMonths = () => {
     const now = new Date()
     const months: string[] = []
-    for (let i = 1; i >= 0; i--) {
+    for (let i = 5; i >= -1; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
       months.push(d.toISOString().slice(0, 7))
     }
@@ -415,6 +415,8 @@ export default function Profile() {
               const spent = spentInMonth(kategori)
               const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0
               const isOver = spent > budget && budget > 0
+              const isPast = selectedMonth < new Date().toISOString().slice(0, 7)
+              const showWarning = isOver && !isPast
 
               return (
                 <div key={kategori} className="budget-row">
@@ -423,7 +425,7 @@ export default function Profile() {
                     {budget > 0 ? (
                       <span className="budget-amounts">
                         Rp {spent.toLocaleString('id-ID')} / Rp {budget.toLocaleString('id-ID')}
-                        <span className={isOver ? 'text-expense' : 'text-income'} style={{ marginLeft: 8, fontSize: 12 }}>
+                        <span className={showWarning ? 'text-expense' : 'text-income'} style={{ marginLeft: 8, fontSize: 12 }}>
                           ({isOver ? `${Math.round((spent / budget) * 100 - 100)}% lebih` : `${Math.round(pct)}%`})
                         </span>
                       </span>
@@ -433,7 +435,7 @@ export default function Profile() {
                   </div>
                   {budget > 0 && (
                     <div className="budget-bar-track">
-                      <div className={`budget-bar-fill${isOver ? ' budget-bar--over' : ''}`} style={{ width: `${pct}%` }} />
+                      <div className={`budget-bar-fill${showWarning ? ' budget-bar--over' : ''}`} style={{ width: `${pct}%` }} />
                     </div>
                   )}
                   <div className="budget-actions" style={{ justifyContent: 'flex-start', gap: 8 }}>
