@@ -45,13 +45,6 @@ function IconDollar() {
     </svg>
   )
 }
-function IconHistory() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-    </svg>
-  )
-}
 function IconTarget() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -82,7 +75,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { label: 'Pemasukan', icon: <IconTrendUp />, path: '/pemasukan' },
     { label: 'Pengeluaran', icon: <IconTrendDown />, path: '/pengeluaran' },
     { label: 'Laporan', icon: <IconBarChart />, path: '/laporan' },
-    { label: 'Riwayat', icon: <IconHistory />, path: '/riwayat' },
     { label: 'Budget', icon: <IconDollar />, path: '/budget', badge: overBudgetCount > 0 ? overBudgetCount : undefined },
     { label: 'Target', icon: <IconTarget />, path: '/goals' },
   ]
