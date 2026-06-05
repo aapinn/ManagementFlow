@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, type ReactNode } from 'react'
+import { useState, useMemo, type ReactNode } from 'react'
 
 export interface Column<T> {
   key: string
@@ -16,7 +16,6 @@ interface DataTableProps<T> {
   emptyTitle?: string
   emptyDescription?: string
   getRowId: (item: T) => string
-  pageSize?: number
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,13 +27,9 @@ export default function DataTable<T>({
   emptyTitle = 'Belum ada data',
   emptyDescription = '',
   getRowId,
-  pageSize = 15,
 }: DataTableProps<T>) {
   const [sortKey, setSortKey] = useState('')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
-  const [page, setPage] = useState(0)
-
-  useEffect(() => { setPage(0) }, [data.length])
 
   const toggleSort = (key: string) => {
     if (sortKey === key) {
@@ -62,24 +57,9 @@ export default function DataTable<T>({
     })
   }, [data, sortKey, sortDir])
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
-  const offset = page * pageSize
-  const paged = sorted.slice(offset, offset + pageSize)
-
   const sortIcon = (key: string) => {
     if (sortKey !== key) return ' ↕'
     return sortDir === 'asc' ? ' ↑' : ' ↓'
-  }
-
-  function Pagination() {
-    if (sorted.length <= pageSize) return null
-    return (
-      <div className="datatable-pagination">
-        <button className="btn btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>← Sebelumnya</button>
-        <span className="datatable-pagination-info">{page + 1} / {totalPages}</span>
-        <button className="btn btn-sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>Berikutnya →</button>
-      </div>
-    )
   }
 
   if (data.length === 0) {
@@ -116,8 +96,8 @@ export default function DataTable<T>({
             </tr>
           </thead>
           <tbody>
-            {paged.map((item) => (
-              <tr key={getRowId(item)}>
+            {sorted.map((item, i) => (
+              <tr key={getRowId(item)} className="stagger-item" style={{ animationDelay: `${i * 0.03}s` }}>
                 {columns.map((col) => (
                   <td key={col.key} className={col.hideOnMobile ? 'hide-mobile' : ''}>
                     {col.render(item)}
@@ -143,13 +123,12 @@ export default function DataTable<T>({
             ))}
           </tbody>
         </table>
-        <Pagination />
       </div>
 
       {/* Mobile card view */}
       <div className="datatable-cards">
-        {paged.map((item) => (
-          <div key={getRowId(item)} className="datatable-card">
+        {sorted.map((item, i) => (
+          <div key={getRowId(item)} className="datatable-card stagger-item" style={{ animationDelay: `${i * 0.03}s` }}>
             {columns.filter((c) => !c.hideOnMobile).map((col) => (
               <div key={col.key} className="datatable-card-field">
                 <span className="datatable-card-label">{col.label}</span>
@@ -172,7 +151,6 @@ export default function DataTable<T>({
             )}
           </div>
         ))}
-        <Pagination />
       </div>
     </>
   )
