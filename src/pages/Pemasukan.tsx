@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useIncome } from '../context/IncomeContext'
 import IncomeForm from '../components/IncomeForm'
 import IncomePieChart from '../components/IncomePieChart'
@@ -45,6 +45,14 @@ export default function Pemasukan() {
   }, [incomes, search, kategori, dateFrom, dateTo])
 
   const { sorted, sort, toggle } = useColumnSort(filtered as unknown as Record<string, unknown>[], 'tanggal')
+
+  const [page, setPage] = useState(0)
+  const pageSize = 15
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
+  const offset = page * pageSize
+  const paged = sorted.slice(offset, offset + pageSize)
+
+  useEffect(() => { setPage(0) }, [filtered.length])
 
   const handleSave = (data: { jumlah: number; keterangan: string; kategori: string; idTransaksi: string; tanggal: string }) => {
     if (editing) {
@@ -126,8 +134,8 @@ export default function Pemasukan() {
                   <EmptyState icon={EMPTY_ICONS.default} title="Belum ada pemasukan" description="Tambahkan pemasukan pertama Anda menggunakan form di atas" />
                 </td></tr>
               ) : (
-                (sorted as unknown as Income[]).map((t, i) => (
-                  <tr key={t.id} className="stagger-item" style={{ animationDelay: `${i * 0.03}s` }}>
+                (paged as unknown as Income[]).map((t) => (
+                  <tr key={t.id}>
                     <td className="text-mono hide-mobile" dangerouslySetInnerHTML={{ __html: highlightMatch(t.idTransaksi, search) }} />
                     <td dangerouslySetInnerHTML={{ __html: highlightMatch(t.keterangan, search) }} />
                     <td><span className="cat-tag">{t.kategori}</span></td>
@@ -152,6 +160,13 @@ export default function Pemasukan() {
             </tbody>
           </table>
         </div>
+        {sorted.length > pageSize && (
+          <div className="datatable-pagination">
+            <button className="btn btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>← Sebelumnya</button>
+            <span className="datatable-pagination-info">{page + 1} / {totalPages}</span>
+            <button className="btn btn-sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>Berikutnya →</button>
+          </div>
+        )}
       </div>
 
       <EditModal open={!!editing} transaction={editing} type="income" onSave={handleSave} onClose={() => setEditing(null)} />

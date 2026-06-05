@@ -1805,3 +1805,35 @@ mark { background: var(--accent-bg); color: var(--accent); padding: 0 2px; borde
     left: -80px;
   }
 }
+
+/* ─── Pagination ─── */
+.datatable-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.datatable-pagination .btn {
+  min-width: 120px;
+}
+
+.datatable-pagination-info {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .datatable-pagination {
+    gap: 8px;
+  }
+  .datatable-pagination .btn {
+    min-width: 0;
+    flex: 1;
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}

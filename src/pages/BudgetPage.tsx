@@ -16,7 +16,7 @@ function formatMonth(ym: string) {
 function getMonths() {
   const now = new Date()
   const months: string[] = []
-  for (let i = 1; i >= 0; i--) {
+  for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     months.push(d.toISOString().slice(0, 7))
   }
