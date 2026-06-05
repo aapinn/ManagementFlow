@@ -44,101 +44,109 @@ function parseArgs(args: string[]): { jumlah: number; keterangan: string } | nul
   return { jumlah, keterangan: args.slice(1).join(' ') }
 }
 
-const expenseKeywords: Record<string, string[]> = {
+interface K extends Record<string, string[]> {}
+function k<K extends K>(obj: K): K { return obj }
+
+const expenseKeywords = k({
   Makanan: [
-    'jajan', 'makan', 'minum', 'nasi', 'mie', 'ayam', 'bakso', 'soto', 'sate',
-    'goreng', 'kopi', 'teh', 'susu', 'roti', 'kue', 'buah', 'sayur', 'lauk',
-    'catering', 'restoran', 'cafe', 'warteg', 'padang', 'seafood', 'burger', 'pizza',
-    'snack', 'cemilan', 'martabak', 'cilok', 'seblak', 'pentol', 'siomay', 'batagor',
-    'dimsum', 'indomie', 'pop mie', 'sembako', 'beras', 'telur', 'minyak goreng',
-    'gula', 'bumbu', 'sarapan', 'tahu', 'tempe', 'ikan', 'daging', 'sayuran',
-    'biskuit', 'coklat', 'permen', 'es krim', 'makanan', 'gabut',
-    'beli makan', 'beli minum', 'bayar makan', 'jajan pasar',
+    'nasi', 'mie', 'ayam', 'bakso', 'soto', 'sate', 'goreng', 'kopi', 'teh',
+    'roti', 'kue', 'buah', 'sayur', 'lauk', 'ikan', 'daging', 'tempe', 'tahu',
+    'telur', 'susu', 'catering', 'restoran', 'cafe', 'warteg', 'padang',
+    'seafood', 'burger', 'pizza', 'snack', 'martabak', 'cilok', 'seblak',
+    'pentol', 'siomay', 'batagor', 'dimsum', 'indomie', 'sembako', 'beras',
+    'minyak', 'gula', 'bumbu', 'sarapan', 'biskuit', 'coklat', 'permen',
+    'jajan', 'makan', 'minum', 'makanan', 'cemilan', 'gabut',
   ],
   Transport: [
-    'bensin', 'tambal ban', 'angkot', 'bus', 'kereta', 'taksi', 'grab', 'gojek',
-    'ojek', 'transjakarta', 'tol', 'parkir', 'bbm', 'solar', 'pertalite', 'pertamax',
-    'kendaraan', 'bahan bakar', 'isi bensin', 'service', 'oli', 'ban', 'sparepart',
-    'cuci motor', 'cuci mobil', 'transport', 'transportasi', 'angkutan', 'karcis',
-    'taxi', 'gocar', 'pesawat', 'kapal', 'bengkel', 'montir', 'stnk',
-    'pajak kendaraan', 'travel', 'naik angkot', 'naik bus', 'naik kereta',
+    'bensin', 'solar', 'pertalite', 'pertamax', 'premium', 'bbm',
+    'angkot', 'bus', 'kereta', 'taksi', 'taxi', 'grab', 'gojek', 'ojek',
+    'gocar', 'transjakarta', 'tol', 'parkir', 'bengkel', 'montir',
+    'tambal', 'oli', 'ban', 'sparepart', 'service', 'stnk',
+    'kendaraan', 'transport', 'transportasi', 'angkutan', 'karcis',
+    'pesawat', 'kapal', 'travel', 'bahan bakar',
   ],
   Tagihan: [
-    'listrik', 'air', 'pdam', 'pln', 'bpjs', 'pajak', 'telpon', 'telepon', 'internet',
-    'wifi', 'pulsa', 'kuota', 'tagihan', 'iuran', 'sewa', 'bpjs kesehatan',
-    'bpjs ketenagakerjaan', 'pbb', 'cicilan', 'kredit', 'pinjaman', 'token listrik',
-    'langganan', 'subscription', 'domisili', 'hosting', 'domain',
+    'listrik', 'pln', 'pdam', 'air', 'bpjs', 'pbb', 'pajak',
+    'telpon', 'telepon', 'internet', 'wifi', 'pulsa', 'kuota',
+    'tagihan', 'iuran', 'sewa', 'cicilan', 'kredit', 'pinjaman',
+    'token', 'langganan', 'subscription', 'hosting', 'domain',
   ],
   Hiburan: [
-    'nonton', 'film', 'netflix', 'spotify', 'youtube', 'game', 'steam', 'playstation',
-    'bioskop', 'konser', 'liburan', 'jalan-jalan', 'wisata', 'traveling', 'vacation',
-    'rekreasi', 'musik', 'streaming', 'jalan jalan', 'nobar', 'topup', 'top up',
-    'diamond', 'vip', 'tv kabel', 'hiburan', 'refreshing', 'libur',
+    'nonton', 'film', 'netflix', 'spotify', 'youtube', 'game', 'steam',
+    'playstation', 'bioskop', 'konser', 'liburan', 'wisata', 'traveling',
+    'jalan-jalan', 'rekreasi', 'musik', 'streaming', 'nobar',
+    'topup', 'diamond', 'vip', 'tv', 'hiburan',
   ],
   Belanja: [
-    'baju', 'celana', 'sepatu', 'sandal', 'tas', 'aksesoris', 'kosmetik', 'skincare',
-    'makeup', 'fashion', 'pakaian', 'belanja', 'shopping', 'shopee', 'tokopedia',
-    'lazada', 'bukalapak', 'perlengkapan', 'perabot', 'furniture', 'dekorasi',
-    'alat rumah tangga', 'alat masak', 'piring', 'gelas', 'handuk',
-    'baterai', 'hiasan', 'sprei', 'gorden',
+    'baju', 'celana', 'sepatu', 'sandal', 'tas', 'aksesoris',
+    'kosmetik', 'skincare', 'makeup', 'fashion', 'pakaian',
+    'belanja', 'shopping', 'shopee', 'tokopedia', 'lazada',
+    'perlengkapan', 'perabot', 'furniture', 'dekorasi',
+    'piring', 'gelas', 'handuk', 'baterai', 'sprei', 'gorden',
   ],
   Kesehatan: [
-    'obat', 'dokter', 'rumah sakit', 'klinik', 'apotek', 'vitamin', 'medical',
-    'check up', 'berobat', 'periksa', 'vaksin', 'masker', 'kesehatan', 'gigi',
-    'mata', 'rs', 'puskesmas', 'bidan', 'sakit', 'demam', 'batuk', 'pilek',
-    'lab', 'laboratorium', 'tes darah', 'konsultasi',
+    'obat', 'dokter', 'rs', 'rumah sakit', 'klinik', 'apotek',
+    'vitamin', 'vaksin', 'masker', 'berobat', 'periksa',
+    'puskesmas', 'bidan', 'sakit', 'demam', 'batuk', 'pilek',
+    'lab', 'laboratorium', 'konsultasi', 'kesehatan', 'gigi', 'mata',
   ],
   Pendidikan: [
-    'kursus', 'les', 'buku', 'sekolah', 'kuliah', 'universitas', 'training',
-    'seminar', 'workshop', 'belajar', 'uang saku', 'spp', 'modul',
-    'privat', 'bimbel', 'bimbingan belajar', 'online course', 'course',
-    'kelas', 'pelatihan', 'pendidikan', 'daftar ulang',
+    'kursus', 'les', 'buku', 'sekolah', 'kuliah', 'spp', 'modul',
+    'training', 'seminar', 'workshop', 'privat', 'bimbel',
+    'course', 'kelas', 'pelatihan', 'belajar', 'pendidikan',
   ],
-}
+})
 
-const incomeKeywords: Record<string, string[]> = {
+const incomeKeywords = k({
   Gaji: [
-    'gaji', 'salary', 'upah', 'honor', 'penghasilan', 'pendapatan', 'thr',
-    'bonus', 'gaji bulanan', 'gaiji',
+    'gaji', 'salary', 'upah', 'honor', 'thr', 'penghasilan', 'pendapatan',
+    'bonus', 'tunjangan', 'insentif', 'komisi',
   ],
   Freelance: [
-    'freelance', 'proyek', 'project', 'desain', 'coding', 'nulis', 'konten',
-    'fotografi', 'videografi', 'kerja lepas', 'design', 'developer',
-    'website', 'aplikasi', 'design grafis', 'edit video', 'fotografer',
+    'freelance', 'proyek', 'project', 'desain', 'design', 'coding',
+    'programming', 'developer', 'nulis', 'konten', 'fotografi', 'videografi',
+    'website', 'aplikasi', 'fotografer', 'editing',
   ],
   Investasi: [
-    'dividen', 'saham', 'crypto', 'reksadana', 'deposito', 'bunga bank',
-    'profit', 'capital gain', 'investasi', 'trading', 'forex', 'emas',
-    'cryptocurrency', 'bitcoin', 'reksa dana', 'obligasi',
+    'dividen', 'saham', 'crypto', 'reksadana', 'deposito', 'bunga',
+    'profit', 'investasi', 'trading', 'forex', 'emas', 'bitcoin',
+    'obligasi', 'capital',
   ],
   Bisnis: [
-    'bisnis', 'jualan', 'dagang', 'dagangan', 'penjualan', 'omset', 'revenue',
+    'bisnis', 'jualan', 'dagang', 'penjualan', 'omset', 'revenue',
     'usaha', 'toko', 'warung', 'reseller', 'dropship', 'affiliate',
-    'jasa', 'order', 'pesanan', 'customer',
+    'jasa', 'order', 'pesanan', 'customer', 'client',
   ],
   Hadiah: [
-    'hadiah', 'gift', 'bonus', 'rejeki', 'angpao', 'kado', 'giveaway',
-    'menang lomba', 'doorprize', 'undian', 'berkah', 'rezeki', 'pemberian',
+    'hadiah', 'gift', 'rejeki', 'rezeki', 'angpao', 'kado',
+    'giveaway', 'doorprize', 'undian', 'berkah',
   ],
-}
+})
 
-function classifyCategory(
-  keterangan: string,
-  type: 'income' | 'expense',
-): string {
+function classifyCategory(keterangan: string, type: 'income' | 'expense'): string {
   const lower = keterangan.toLowerCase()
+  const words = lower.split(/\s+/).filter(Boolean)
   const map = type === 'expense' ? expenseKeywords : incomeKeywords
-  const defaultCat = type === 'expense' ? 'Lainnya' : 'Lainnya'
 
   let bestScore = 0
-  let bestCat = defaultCat
+  let bestCat = 'Lainnya'
 
   for (const [cat, keywords] of Object.entries(map)) {
     let score = 0
     for (const kw of keywords) {
       if (lower.includes(kw)) {
-        score += kw.length > 4 ? 3 : 2
-        if (lower.startsWith(kw) || lower.endsWith(kw)) score += 1
+        score += 10
+      }
+      for (const word of words) {
+        if (word === kw) {
+          score += 5
+        }
+        if (word.length >= 4 && word.includes(kw) && kw.length >= 3) {
+          score += 3
+        }
+        if (kw.includes(word) && word.length >= 4) {
+          score += 2
+        }
       }
     }
     if (score > bestScore) {
