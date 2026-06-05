@@ -44,6 +44,112 @@ function parseArgs(args: string[]): { jumlah: number; keterangan: string } | nul
   return { jumlah, keterangan: args.slice(1).join(' ') }
 }
 
+const expenseKeywords: Record<string, string[]> = {
+  Makanan: [
+    'jajan', 'makan', 'minum', 'nasi', 'mie', 'ayam', 'bakso', 'soto', 'sate',
+    'goreng', 'kopi', 'teh', 'susu', 'roti', 'kue', 'buah', 'sayur', 'lauk',
+    'catering', 'restoran', 'cafe', 'warteg', 'padang', 'seafood', 'burger', 'pizza',
+    'snack', 'cemilan', 'martabak', 'cilok', 'seblak', 'pentol', 'siomay', 'batagor',
+    'dimsum', 'indomie', 'pop mie', 'sembako', 'beras', 'telur', 'minyak goreng',
+    'gula', 'bumbu', 'sarapan', 'tahu', 'tempe', 'ikan', 'daging', 'sayuran',
+    'biskuit', 'coklat', 'permen', 'es krim', 'makanan', 'gabut',
+    'beli makan', 'beli minum', 'bayar makan', 'jajan pasar',
+  ],
+  Transport: [
+    'bensin', 'tambal ban', 'angkot', 'bus', 'kereta', 'taksi', 'grab', 'gojek',
+    'ojek', 'transjakarta', 'tol', 'parkir', 'bbm', 'solar', 'pertalite', 'pertamax',
+    'kendaraan', 'bahan bakar', 'isi bensin', 'service', 'oli', 'ban', 'sparepart',
+    'cuci motor', 'cuci mobil', 'transport', 'transportasi', 'angkutan', 'karcis',
+    'taxi', 'gocar', 'pesawat', 'kapal', 'bengkel', 'montir', 'stnk',
+    'pajak kendaraan', 'travel', 'naik angkot', 'naik bus', 'naik kereta',
+  ],
+  Tagihan: [
+    'listrik', 'air', 'pdam', 'pln', 'bpjs', 'pajak', 'telpon', 'telepon', 'internet',
+    'wifi', 'pulsa', 'kuota', 'tagihan', 'iuran', 'sewa', 'bpjs kesehatan',
+    'bpjs ketenagakerjaan', 'pbb', 'cicilan', 'kredit', 'pinjaman', 'token listrik',
+    'langganan', 'subscription', 'domisili', 'hosting', 'domain',
+  ],
+  Hiburan: [
+    'nonton', 'film', 'netflix', 'spotify', 'youtube', 'game', 'steam', 'playstation',
+    'bioskop', 'konser', 'liburan', 'jalan-jalan', 'wisata', 'traveling', 'vacation',
+    'rekreasi', 'musik', 'streaming', 'jalan jalan', 'nobar', 'topup', 'top up',
+    'diamond', 'vip', 'tv kabel', 'hiburan', 'refreshing', 'libur',
+  ],
+  Belanja: [
+    'baju', 'celana', 'sepatu', 'sandal', 'tas', 'aksesoris', 'kosmetik', 'skincare',
+    'makeup', 'fashion', 'pakaian', 'belanja', 'shopping', 'shopee', 'tokopedia',
+    'lazada', 'bukalapak', 'perlengkapan', 'perabot', 'furniture', 'dekorasi',
+    'alat rumah tangga', 'alat masak', 'piring', 'gelas', 'handuk',
+    'baterai', 'hiasan', 'sprei', 'gorden',
+  ],
+  Kesehatan: [
+    'obat', 'dokter', 'rumah sakit', 'klinik', 'apotek', 'vitamin', 'medical',
+    'check up', 'berobat', 'periksa', 'vaksin', 'masker', 'kesehatan', 'gigi',
+    'mata', 'rs', 'puskesmas', 'bidan', 'sakit', 'demam', 'batuk', 'pilek',
+    'lab', 'laboratorium', 'tes darah', 'konsultasi',
+  ],
+  Pendidikan: [
+    'kursus', 'les', 'buku', 'sekolah', 'kuliah', 'universitas', 'training',
+    'seminar', 'workshop', 'belajar', 'uang saku', 'spp', 'modul',
+    'privat', 'bimbel', 'bimbingan belajar', 'online course', 'course',
+    'kelas', 'pelatihan', 'pendidikan', 'daftar ulang',
+  ],
+}
+
+const incomeKeywords: Record<string, string[]> = {
+  Gaji: [
+    'gaji', 'salary', 'upah', 'honor', 'penghasilan', 'pendapatan', 'thr',
+    'bonus', 'gaji bulanan', 'gaiji',
+  ],
+  Freelance: [
+    'freelance', 'proyek', 'project', 'desain', 'coding', 'nulis', 'konten',
+    'fotografi', 'videografi', 'kerja lepas', 'design', 'developer',
+    'website', 'aplikasi', 'design grafis', 'edit video', 'fotografer',
+  ],
+  Investasi: [
+    'dividen', 'saham', 'crypto', 'reksadana', 'deposito', 'bunga bank',
+    'profit', 'capital gain', 'investasi', 'trading', 'forex', 'emas',
+    'cryptocurrency', 'bitcoin', 'reksa dana', 'obligasi',
+  ],
+  Bisnis: [
+    'bisnis', 'jualan', 'dagang', 'dagangan', 'penjualan', 'omset', 'revenue',
+    'usaha', 'toko', 'warung', 'reseller', 'dropship', 'affiliate',
+    'jasa', 'order', 'pesanan', 'customer',
+  ],
+  Hadiah: [
+    'hadiah', 'gift', 'bonus', 'rejeki', 'angpao', 'kado', 'giveaway',
+    'menang lomba', 'doorprize', 'undian', 'berkah', 'rezeki', 'pemberian',
+  ],
+}
+
+function classifyCategory(
+  keterangan: string,
+  type: 'income' | 'expense',
+): string {
+  const lower = keterangan.toLowerCase()
+  const map = type === 'expense' ? expenseKeywords : incomeKeywords
+  const defaultCat = type === 'expense' ? 'Lainnya' : 'Lainnya'
+
+  let bestScore = 0
+  let bestCat = defaultCat
+
+  for (const [cat, keywords] of Object.entries(map)) {
+    let score = 0
+    for (const kw of keywords) {
+      if (lower.includes(kw)) {
+        score += kw.length > 4 ? 3 : 2
+        if (lower.startsWith(kw) || lower.endsWith(kw)) score += 1
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score
+      bestCat = cat
+    }
+  }
+
+  return bestCat
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(200).json({ ok: true })
@@ -109,6 +215,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json({ ok: true })
       }
 
+      const incomeCat = classifyCategory(parsed.keterangan, 'income')
       const ref = db.collection('incomes').doc(uid)
       const snap = await ref.get()
       const items = snap.exists ? (snap.data()?.items ?? []) : []
@@ -117,7 +224,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         idTransaksi: `TG-${Date.now().toString(36).toUpperCase()}`,
         jumlah: parsed.jumlah,
         keterangan: parsed.keterangan,
-        kategori: 'Lainnya',
+        kategori: incomeCat,
         tanggal: new Date().toISOString().slice(0, 10),
         catatan: 'via Telegram',
       })
@@ -138,7 +245,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
-      await send(chatId, `✅ Pemasukan tercatat:\nRp ${parsed.jumlah.toLocaleString('id-ID')} — ${parsed.keterangan}`)
+      await send(chatId, `✅ Pemasukan tercatat:\nRp ${parsed.jumlah.toLocaleString('id-ID')} — ${parsed.keterangan}\n🗂️ Kategori: ${incomeCat}`)
       return res.status(200).json({ ok: true })
     }
 
@@ -149,6 +256,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json({ ok: true })
       }
 
+      const expenseCat = classifyCategory(parsed.keterangan, 'expense')
+
       const ref = db.collection('expenses').doc(uid)
       const snap = await ref.get()
       const items = snap.exists ? (snap.data()?.items ?? []) : []
@@ -157,7 +266,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         idTransaksi: `TG-${Date.now().toString(36).toUpperCase()}`,
         jumlah: parsed.jumlah,
         keterangan: parsed.keterangan,
-        kategori: 'Lainnya',
+        kategori: expenseCat,
         tanggal: new Date().toISOString().slice(0, 10),
         catatan: 'via Telegram',
       })
@@ -178,7 +287,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
-      await send(chatId, `✅ Pengeluaran tercatat:\nRp ${parsed.jumlah.toLocaleString('id-ID')} — ${parsed.keterangan}`)
+      await send(chatId, `✅ Pengeluaran tercatat:\nRp ${parsed.jumlah.toLocaleString('id-ID')} — ${parsed.keterangan}\n🗂️ Kategori: ${expenseCat}`)
       return res.status(200).json({ ok: true })
     }
 
